@@ -1,0 +1,35 @@
+<!DOCTYPE html> 
+<html lang="vi"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Login page</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="icon" href="favicon.ico" />
+    <link rel="stylesheet" href="login/login.css">
+</head>
+<body>
+    
+    <div class="login-container">
+        <header>
+            <h1>Đăng nhập</h1>
+        </header>
+        <form class="login-form" id="loginForm">
+            <div class="email-container"><input type="email" id="emailInput" placeholder="Email" required>
+                <i class="bx bxs-user"></i>
+            </div>
+                
+            <!-- Password -->
+            <div class="password-container">
+                <input type="password" id="passwordInput" placeholder="Password" required>
+                <img src="images/eye-closed.png" id="togglePassword" alt="Toggle Password Visibility" />
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit">Đăng nhập</button>
+        </form>
+    </div>
+
+    <script type="module" src="login/login.js"></script>
+</body>
+</html>

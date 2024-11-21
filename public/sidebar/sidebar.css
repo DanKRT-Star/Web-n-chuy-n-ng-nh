@@ -1,0 +1,139 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+}
+
+body {
+    min-height: 100vh;
+}
+
+
+
+/* Cấu trúc bố cục */
+.layout {
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* Sidebar nền để đẩy nội dung */
+.sidebar-container {
+    position: relative;
+    
+    width: 80px; /* Chiều rộng mặc định */
+    transition: width 0.5s;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-container.active_menu {
+    width: 280px; /* Chiều rộng khi mở rộng */
+}
+
+/* Sidebar nổi bên trong */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 80px;
+    background-color: white;
+    transition: width 0.5s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    inline-size: 1000;
+    margin: 0;
+    padding: 0;
+   
+}
+
+.sidebar-container.active_menu .sidebar {
+    width: 280px;
+}
+/* Nội dung chính */
+.main-content {
+    flex: 1;
+    margin-left:0px;
+    transition: margin-left 0.5s;
+    padding: 0;
+}
+
+.sidebar-container.active_menu ~ .main-content {
+    margin-left:200px; 
+}
+
+.sidebar-header {
+    text-align: center;
+    padding-top: 30px;
+    font-size: 30px;
+
+}
+
+.sidebar-header i {
+    color: orange;
+
+}
+
+
+
+ul {
+    width: 250px;
+    height: 100vh;
+    list-style: none;
+    padding-left: 25px;
+    padding-top: 100px;
+}
+
+ul li {
+    width: 200px;
+    display: inline-flex;
+    margin-bottom: 30px;
+    min-height: 40px;
+    padding-left: 5px;
+}
+
+ul li {
+    width: 100%;  /* Full width of the container */
+    display: flex; /* Align icon and span horizontally */
+    align-items: center; /* Vertically align items */
+    margin-bottom: 30px;
+    min-height: 40px;
+}
+
+ul li i {
+    margin-right: 25px; /* Adjust spacing between icon and text */
+    transition: 0.4s;
+    font-size: 25px;
+    color: orange;
+ 
+}
+
+ul li span {
+    color: orange;
+    transition: color 0.4s, background-color 0.4s, padding 0.4s, margin 0.4s;
+    padding: 0.2rem 0.5rem; /* Initial padding */
+    border-radius: 20px; /* Rounded ends for the rectangle */
+    background-color: transparent; /* No background initially */
+    white-space: nowrap; 
+}
+
+ul li:hover span {
+    color: white;
+    background-color: #ffb753;
+    padding: 0.4rem 1rem; /* Expand padding on hover for larger size */
+    margin-left: 10px; /* Add spacing between icon and span */
+}
+
+
+ul li:hover i {
+    color: #ffb753;
+    transform: scale(1.5);
+}
+
+
+

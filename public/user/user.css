@@ -1,0 +1,178 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Đảm bảo chiều cao của body luôn chiếm 100% màn hình */
+    background-color: #f8f8f8;
+}
+
+main {
+    flex: 1; /* Cho phép main chiếm hết không gian còn lại giữa header và footer */
+    padding-bottom: 50px; /* Dự phòng khoảng trống dưới cùng cho footer */
+}
+
+header {
+    height: 100px;
+}
+
+footer {
+    background: linear-gradient(45deg, #ff9900, #fff344); /* Gradient cam */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar-container {
+    flex: 0 0 80px; /* Chiều rộng cố định cho sidebar */
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: calc(100vw - 80px); /* Chừa khoảng trống cho sidebar */
+}
+
+@keyframes tablepop {
+    from {
+        width: 0%;  
+    }
+
+    to {
+        width: 90%;
+    }
+}
+
+@keyframes table-expand-down {
+    from {
+        height: 10%;
+    }
+
+    to {
+        height: 100%;
+    }
+}
+
+/* Container cho bảng */
+.table-container {
+    animation: tablepop 0.3s ease-in forwards,
+               table-expand-down 0.3s ease-in 0.4s forwards;
+    width: 0%;
+    margin: 30px auto;
+    padding: 10px;
+    border-radius: 8px;
+    overflow: hidden; /* Ẩn nội dung vượt quá khi mở rộng */
+    height: 30px;
+}
+
+
+
+@keyframes Pop-up {
+    from {
+        visibility: hidden;
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        visibility: visible;
+        transform: scale(1) ;
+        opacity: 1;
+    }
+}
+
+table {
+    width: 100%;
+    border-spacing: 0 5px; /* Khoảng cách giữa các hàng */
+    border-collapse: separate; /* Đảm bảo khoảng cách hoạt động */
+}
+
+/* Đầu bảng */
+thead {
+    visibility: hidden;
+    animation: Pop-up 0.3s ease-in forwards;
+    animation-delay:0.5s;
+    background-color: #FFA500;
+    color: white;
+}
+
+
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+}
+
+thead th:first-child{
+    border-top-left-radius: 8px; /* Góc trên trái */
+    border-bottom-left-radius: 3px; /* Góc dưới trái */
+}
+thead th:last-child{
+    border-top-right-radius: 8px; /* Góc trên phải */
+    border-bottom-right-radius: 3px; /* Góc dưới phải */
+}
+
+tbody tr td:first-child {
+    border-top-left-radius: 8px; /* Góc trên trái */
+    border-bottom-left-radius: 8px; /* Góc dưới trái */
+}
+
+tbody tr td:last-child {
+    border-top-right-radius: 8px; /* Góc trên phải */
+    border-bottom-right-radius: 8px; /* Góc dưới phải */
+}
+
+tbody tr {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 0; /* Bắt đầu từ chiều cao 0 */
+    opacity: 0; /* Bắt đầu trong suốt */
+    animation: expand-down 0.7s ease forwards;
+    animation-delay: 0.7s; 
+}
+
+/* Điều chỉnh keyframes expand-down để mở rộng dần các dòng */
+@keyframes expand-down {
+    0% {
+        height: 0;
+        opacity: 0;
+    }
+    100% {
+        height: auto;
+        opacity: 1;
+    }
+}
+tbody tr:hover {
+    background-color: #FFE0B2;
+}
+
+tbody tr td {
+    background-color: #ffffff;
+}
+
+/* Kích thước các cột */
+th:first-child, td:first-child {
+    width: 5%;
+    text-align: center;
+}
+
+th:nth-child(3), td:nth-child(3) {
+    width: 15%;
+}
+
+th:nth-child(4), td:nth-child(4) {
+    width: 25%;
+}
+
+th:nth-child(5), td:nth-child(5) {
+    width: 15%;
+}
+

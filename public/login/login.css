@@ -1,0 +1,158 @@
+/* Reset cơ bản */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Định dạng chung */
+body {
+    background-image: url('../images/Background.png'); /* Đặt ảnh nền */
+    background-size: cover; /* Điều chỉnh ảnh để che phủ toàn bộ nền */
+    background-repeat: no-repeat; /* Không lặp lại ảnh */
+    background-position: center; /* Căn giữa ảnh */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+@keyframes SlideinBottom {
+    from {
+        transform: translateY(200px);
+    }
+
+    to {
+        transform: translateY(0px);
+    }
+}
+
+.login-container {
+    animation: SlideinBottom 1s ease-in normal;
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    background: transparent;
+    border:2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+header {
+    display: inline-block;
+    color: transparent; /* Để cho phép gradient hiển thị */
+    background: white; /* Gradient cam cho chữ */
+    background-clip: text; /* Chỉ áp dụng gradient cho phần chữ */
+    -webkit-background-clip: text; /* Cần cho trình duyệt hỗ trợ webkit */
+    font-weight: bold;
+    font-size: 1.5rem; /* Tăng kích thước chữ */
+    margin-bottom: 1.5rem;
+    border-radius: 0; /* Loại bỏ viền bo tròn */
+    padding: 0; /* Loại bỏ khoảng nền */
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+.login-form input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 0.5rem;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255,0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    color: #fff;
+}
+
+.login-form input::placeholder {
+    color: #fff;
+    opacity: 0.9;
+}
+.login-form input:focus {
+    
+    border: 2px solid;
+    border-image:linear-gradient(45deg, #ff9900, #fff344) 1; 
+    outline: none; 
+}
+
+
+
+button[type="submit"] {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 1.5rem;
+    background: white;
+    border: none;
+    font-weight: bold;
+    border-radius: 20px;
+    color: #ff9900;
+    font-size: 1rem;
+    transition: 0.5s;
+    
+}
+
+button[type="submit"]:hover {
+   transform: scale(1.02,1) ;
+   background: linear-gradient(45deg, #ff9900, #fff344);
+   color: white;
+   border: 1px solid white;
+} 
+
+
+/* Kiểu dáng cho ô nhập mật khẩu */
+.email-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Kiểu dáng cho ô nhập mật khẩu */
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+input[type="email"], input[type="text"] {
+    width: 100%;
+    padding-right: 40px; /* Dành không gian cho icon */
+}
+
+.bx {
+    position: absolute;
+    right: 10px; /* Đặt icon cách cạnh phải một khoảng */
+    top: 60%; /* Căn giữa icon theo chiều dọc */
+    transform: translateY(-50%); /* Đảm bảo icon nằm ở giữa theo chiều dọc */
+    cursor: pointer;
+    width: 24px; /* Kích thước icon */
+    height: 24px; /* Kích thước icon */
+    color: #fff;
+}
+
+i {
+    font-size: 24px;
+    opacity: 0.9;
+}
+
+input[type="password"], input[type="text"] {
+    width: 100%;
+    padding-right: 40px; /* Dành không gian cho icon */
+}
+
+/* Kiểu dáng cho icon mắt */
+#togglePassword {
+    position: absolute;
+    right: 10px; /* Đặt icon cách cạnh phải một khoảng */
+    top: 57%; /* Căn giữa icon theo chiều dọc */
+    transform: translateY(-50%); /* Đảm bảo icon nằm ở giữa theo chiều dọc */
+    cursor: pointer;
+    width: 24px; /* Kích thước icon */
+    height: 24px; /* Kích thước icon */
+    opacity: 0.9;
+}
+
+

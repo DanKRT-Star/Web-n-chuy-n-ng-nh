@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Quản lý Thu nhập</title>
+    <link rel="stylesheet" href="./income.css">
+    <link rel="stylesheet" href="../sidebar/sidebar.css">
+    <link rel="stylesheet" href="../navigationbar/navigationbar.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="icon" href="../favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="layout">
+        <div class="sidebar-container">
+            <!-- Phần Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class='bx bx-grid' id="active"></i>
+            </div>
+            <ul>
+                <li><i class="bx bxs-home" data-function="homepage"></i><span data-function="homepage">Trang Chủ</span></li>
+                <li><i class="bx bxs-user-circle" data-function="user"></i><span data-function="user">Quản lý User</span></li>
+                <li><i class="bx bxs-car" data-function="driver"></i><span data-function="driver">Quản lý Driver</span></li>
+                <li><i class="bx bxs-receipt" data-function="order"></i><span data-function="order">Quản lý Mặt hàng</span></li>
+                <li><i class="bx bxs-credit-card" data-function="payment"></i><span data-function="payment">Quản lý Thanh toán</span></li>
+                <li><i class="bx bx-line-chart" data-function="income"></i><span data-function="income">Quản lý Thu nhập</span></li>
+                <li><i class="bx bxs-message-rounded-dots" data-function="Ride-Request"></i><span data-function="Ride-Request">Quản lý Yêu cầu</span></li>
+                <li><i class="bx bx-log-out exclude" ></i><span class="exclude">Đăng xuất</span></li>
+            </ul>
+        </div>
+        </div>
+        <div class="main-content">
+            <header>
+                <div class="navigationbar-container">
+                    <div class="navigationbar">
+                        <div class="titlepage"><h1>Quản lý Thu nhập</h1></div>
+                        <div class="search-container">
+                            <input type="text" placeholder="Tìm kiếm..." class="search-bar"> 
+                            <button class="searchbutton">
+                                <i class='bx bx-search-alt-2'></i>
+                            </button>
+                        </div>
+                        <div class="header-icon" id="adminIcon">
+                            <i class="bx bxs-user-circle"></i>
+                        </div>
+                    </div>    
+                </div>
+            </header>
+             <!-- Popup for Admin Info -->
+             <div class="popup" id="adminPopup">
+                <div class="popup-content">
+                    <button class="close-btn" id="closePopup"><i class="bx bx-x"></i></button>
+                    <i class="bx bx-user-circle popup-icon"></i>
+                    <span class="popup-title">Admin</span>
+                    <button onclick="redirectToPage()" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+            <script>
+                function redirectToPage() {
+                    window.location.href = "../index.html";  
+                }
+            </script>
+
+            <main>
+                <div class="title">
+                    <h1 class="titleh1" >Bảng thống kê</h1>
+                    <div class="dropdown">
+                        <div class="dropdown-menu" id="dropdownMenu">
+                            <div>ngày</div>
+                            <div>tháng</div>
+                            <div>năm</div>
+                        </div>
+                        <div class="dropdown-toggle" id="selectedOption">tuỳ chọn</div>
+                    </div>
+                     <!-- Các ô chọn ngày và năm -->
+                    <div id="rangeSelection">
+                        <input type="date" id="startDate" style="display:none;" />
+                        <input type="date" id="endDate" style="display:none;" />
+                        <input type="number" id="yearSelection" placeholder="Chọn năm" style="display:none;" />
+                        <input type="number" id="startYear" placeholder="Năm bắt đầu" style="display:none;" min="2000" max="2100"/>
+                        <input type="number" id="endYear" placeholder="Năm kết thúc" style="display:none;" min="2000" max="2100"/>
+                    </div>
+                </div>
+                <div class="box income mainChart">
+                    <canvas id="myChart"></canvas>
+                </div>
+
+
+                    <div class="box amount sideChart1">
+                        <canvas id="myChart1"></canvas>
+                    </div>
+
+
+                    <div class="box result sideChart2">
+                        <div class="requestChart">
+                            <canvas id="myChart2"></canvas>
+                        </div>
+                        <div class="requestResult">
+                            <table class="requestTable">
+                                <thead>
+                                    <tr>
+                                        <td><div class="Total"><h2>Tổng số chuyến:</h2></div></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><div class="Success"><h4>Thành công</h4></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="Arrived"><h4>Đã đến điểm hẹn</h4></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="FoundDriver"><h4>Đã có tài xế</h4></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="NotHaveDriver"><h4>Chưa có tài xế</h4></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="Fail"><h4>Thất bại</h4></div></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                    </div>
+            </main>
+
+            <footer>
+                <p>&copy; 2024 Hệ thống Quản lý</p>
+            </footer>
+
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="../navigationbar/navigationbar.js"></script> 
+    <script src="../sidebar/sidebar.js"></script> 
+    <script type="module" src="income.js"></script>
+ 
+</body>

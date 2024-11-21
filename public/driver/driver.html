@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Quản lý Tài xế</title>
+    <!-- CSS files -->
+    <link rel="stylesheet" href="./driver.css">
+    <link rel="stylesheet" href="../sidebar/sidebar.css">
+    <link rel="stylesheet" href="../navigationbar/navigationbar.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="icon" href="../favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="layout">
+        <div class="sidebar-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <i class='bx bx-grid' id="active"></i>
+                </div>
+                <ul>
+                    <li><i class="bx bxs-home" data-function="homepage"></i><span data-function="homepage">Trang Chủ</span></li>
+                    <li><i class="bx bxs-user-circle" data-function="user"></i><span data-function="user">Quản lý User</span></li>
+                    <li><i class="bx bxs-car" data-function="driver"></i><span data-function="driver">Quản lý Driver</span></li>
+                    <li><i class="bx bxs-receipt" data-function="order"></i><span data-function="order">Quản lý Mặt hàng</span></li>
+                    <li><i class="bx bxs-credit-card" data-function="payment"></i><span data-function="payment">Quản lý Thanh toán</span></li>
+                    <li><i class="bx bx-line-chart" data-function="income"></i><span data-function="income">Quản lý Thu nhập</span></li>
+                    <li><i class="bx bxs-message-rounded-dots" data-function="Ride-Request"></i><span data-function="Ride-Request">Quản lý Yêu cầu</span></li>
+                    <li><i class="bx bx-log-out exclude"></i><span class="exclude">Đăng xuất</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-content">
+            <!-- Header -->
+            <header>
+                <div class="navigationbar-container">
+                    <div class="navigationbar">
+                        <div class="titlepage"><h1>Quản lý driver</h1></div>
+                        <div class="search-container">
+                            <input type="text" placeholder="Tìm kiếm..." class="search-bar">
+                            <button class="searchbutton">
+                                <i class='bx bx-search-alt-2'></i>
+                            </button>
+                        </div>
+                        <div class="header-icon" id="adminIcon">
+                            <i class="bx bxs-user-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Popup for Admin Info -->
+            <div class="popup" id="adminPopup">
+                <div class="popup-content">
+                    <button class="close-btn" id="closePopup"><i class="bx bx-x"></i></button>
+                    <i class="bx bx-user-circle popup-icon"></i>
+                    <span class="popup-title">Admin</span>
+                    <button onclick="redirectToPage()" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <main>
+                <div class="container" id="driverContainer"></div>
+
+                <!-- Modal để hiển thị chi tiết tài xế -->
+                <div id="driverDetailModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <h2 id="driverName"></h2>
+                        <p id="driverID"></p>
+                        <p id="driverEmail"></p>
+                        <p id="driverPhone"></p>
+                        <p id="driverAddress"></p>
+                        <p id="driverRating"></p>
+                        <p id="driverEarning"></p>
+                        <p id="driverToken"></p>
+
+                        <!-- Button và thông tin Car Details -->
+                        <button class="toggle-btn" id="carDetailsToggle">
+                            <span>Chi Tiết Xe</span> <i class="arrow">&#x2193;</i>
+                        </button>
+                        <div id="carDetails" class="details-info">
+                            <p><strong>Loại xe:</strong> <span id="carType"></span></p>
+                            <p><strong>Hãng xe:</strong> <span id="carModel"></span></p>
+                            <p><strong>Màu xe:</strong> <span id="carColor"></span></p>
+                            <p><strong>Số xe:</strong> <span id="carNumber"></span></p>
+                        </div>
+
+                        <!-- Button và thông tin Trip History -->
+                        <button class="toggle-btn" id="tripHistoryToggle">
+                            <span>Lịch Sử Chuyến Đi</span> <i class="arrow">&#x2193;</i>
+                        </button>
+                        <div id="tripHistory" class="details-info">
+                            <!-- Lịch sử chuyến đi sẽ được liệt kê ở đây -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer>
+                <p>&copy; 2024 Hệ thống Quản lý</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- JS files -->
+    <script src="../navigationbar/navigationbar.js"></script>
+    <script src="../sidebar/sidebar.js"></script>
+    <script type="module" src="./driver.js"></script>
+    <script>
+        // Redirect to login
+        function redirectToPage() {
+            window.location.href = "../index.html";
+        }
+    </script>
+</body>
+</html>

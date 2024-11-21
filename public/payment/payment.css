@@ -1,0 +1,267 @@
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar-container {
+    flex: 0 0 80px; /* Chiều rộng cố định cho sidebar */
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: calc(100vw - 80px); /* Chừa khoảng trống cho sidebar */
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8f8f8;
+}
+
+header {
+    height: 100px;
+}
+
+footer {
+    background: linear-gradient(45deg, #ff9900, #fff344); /* Gradient cam */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+main {
+    flex: 1; /* Cho phép main chiếm hết không gian còn lại giữa header và footer */
+    padding-bottom: 50px; /* Dự phòng khoảng trống dưới cùng cho footer */
+}
+
+.table-container {
+    animation: tablepop 0.3s ease-in forwards,
+               table-expand-down 0.3s ease-in 0.4s forwards;
+    width: 0%;
+    margin: 30px auto;/* Màu nền nhạt cho bảng */
+    padding: 10px;
+    border-radius: 8px; /* Ẩn nội dung vượt quá khi mở rộng */
+    height: 30px;
+}
+@keyframes tablepop {
+    from {
+        width: 0%;  
+    }
+
+    to {
+        width: 90%;
+    }
+}
+
+@keyframes table-expand-down {
+    from {
+        height: 10%;
+    }
+
+    to {
+        height: 100%;
+    }
+}
+
+#paymentTable {
+    width: 100%;
+    border-spacing: 0 5px; /* Khoảng cách giữa các hàng */
+    border-collapse: separate; /* Đảm bảo khoảng cách hoạt động */
+}
+
+thead tr {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+thead th:first-child{
+    border-top-left-radius: 8px; /* Góc trên trái */
+    border-bottom-left-radius: 3px; /* Góc dưới trái */
+}
+thead th:last-child{
+    border-top-right-radius: 8px; /* Góc trên phải */
+    border-bottom-right-radius: 3px; /* Góc dưới phải */
+}
+
+#paymentTable tbody tr {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9; /* Màu nền cho hàng */
+}
+
+/* Mỗi ô trong hàng */
+#paymentTable tbody tr td {
+    text-align: center;
+    padding: 10px; /* Khoảng cách nội dung */
+    border: none; /* Thêm viền cho mỗi ô */
+    border-radius: none;
+    background-color: #ffffff; /* Màu nền cho mỗi ô */
+}
+
+#paymentTable tbody tr td:first-child {
+    border-top-left-radius: 8px; /* Góc trên trái */
+    border-bottom-left-radius: 8px; /* Góc dưới trái */
+}
+
+#paymentTable tbody tr td:last-child {
+    border-top-right-radius: 8px; /* Góc trên phải */
+    border-bottom-right-radius: 8px; /* Góc dưới phải */
+}
+
+/* Mỗi ô trong hàng */
+#paymentTable tbody tr td {
+    text-align: center;
+    padding: 10px; /* Khoảng cách nội dung */
+    border: none; /* Thêm viền cho mỗi ô */
+    border-radius: none;
+    background-color: #ffffff; /* Màu nền cho mỗi ô */
+}
+
+/* Đầu bảng */
+#paymentTable thead {
+    visibility: hidden;
+    animation: Pop-up 0.3s ease-in forwards;
+    animation-delay:0.5s;
+    background-color: #FFA500;
+    color: white;
+    height: 40px;
+    border-radius: 35px;
+}
+@keyframes Pop-up {
+    from {
+        visibility: hidden;
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        visibility: visible;
+        transform: scale(1) ;
+        opacity: 1;
+    }
+}
+
+ td {
+    padding: 12px;
+    align-items: center;
+    font-size: 14px;
+}
+
+
+tbody tr {
+    /* Bắt đầu từ chiều cao 0 */
+    opacity: 0; /* Bắt đầu trong suốt */
+    animation: expand-down 0.7s ease forwards;
+    animation-delay: 0.7s;
+}
+
+
+
+@keyframes expand-down {
+    0% {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
+
+.Name {
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: #ff9900;
+}
+
+.Phone {
+    text-align: center;
+
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    margin: 5px;
+    border: 1px solid #ff9900;
+    animation: Pop-upmodal 0.3s
+}
+
+@keyframes Pop-upmodal {
+    0%{
+        opacity: 0;
+        scale: 0.5;
+    }
+    100% {
+        opacity: 1;
+        scale: 1;;
+    }
+
+    
+}
+
+.close-button {
+    background: #ff9900;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    height: 35px;
+}
+
+button {
+    border: none;
+    font-size: 14px;
+    background: rgba(175, 238, 238, 0.7);
+    width: 50%;
+    height: 20px;
+    border-radius: 25px;
+}
+
+p {
+    margin: 20px;
+    text-align: left;
+    color: #ff9900;
+}
+
+h2 {
+    color: #ff9900;
+}
+
+.cash-method {
+    display: flex; /* Kích hoạt flexbox */
+    justify-content: center; /* Căn giữa ngang */
+    align-items: center; /* Căn giữa dọc */
+    text-align: center;
+    width: 50%;
+    height: 20px;
+    border-radius: 25px;
+    background-color: rgba(127, 255, 127, 0.7); 
+    margin-left: 25%;
+}

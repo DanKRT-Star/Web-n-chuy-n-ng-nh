@@ -1,0 +1,151 @@
+/* Toàn bộ cấu hình hiện tại, chỉ thêm chỉnh sửa nhỏ */
+/* homepage.css */
+
+/* Đặt sidebar và nội dung chính cạnh nhau */
+.layout {
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-container {
+    flex: 0 0 80px; /* Chiều rộng cố định cho sidebar */
+    margin: 0;
+    padding: 0;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+   
+}
+
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8f8f8;
+}
+
+header {
+    height: 100px;
+}
+
+footer {
+    background: linear-gradient(45deg, #ff9900, #fff344); /* Gradient cam */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+main {
+    display: flex;
+    flex: 1;
+    justify-content: center; /* Căn giữa chính giữa */
+    padding: 20px;
+}
+
+
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Tạo 3 cột đều */
+    gap: 30px;  /* Khoảng cách giữa các box */
+    width: 100%;
+    max-width: 1200px; /* Giới hạn chiều rộng container */
+}
+
+@keyframes Pop-up {
+    from {
+        visibility: hidden;
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        visibility: visible;
+        transform: scale(1) ;
+        opacity: 1;
+    }
+}
+
+.b1 {
+    animation: Pop-up 0.3s ease-in forwards;
+    visibility: hidden;
+}
+
+.b2 {
+    animation: Pop-up 0.3s ease-in 0.2s forwards;
+    visibility: hidden;
+}
+
+.b3 {
+    animation: Pop-up 0.3s ease-in 0.4s forwards;
+    visibility: hidden;
+}
+
+.b4 {
+    animation: Pop-up 0.3s ease-in 0.6s forwards;
+    visibility: hidden;
+}
+
+.b5 {
+    animation: Pop-up 0.3s ease-in 0.8s forwards;
+    visibility: hidden;
+}
+
+.b6 {
+    animation: Pop-up 0.3s ease-in 1s forwards;
+    visibility: hidden;
+}
+
+.box {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    text-align: center;
+    color: black;
+    transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px;  /* Đảm bảo box có chiều cao tối thiểu */
+    height: 100%;  /* Cho phép box có chiều cao đầy đủ */
+    box-sizing: border-box; /* Đảm bảo padding không làm thay đổi kích thước */
+}
+
+.box:hover {
+    border: 3px solid #ff9900; 
+}
+
+.icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    object-fit: cover;
+}
+
+h2 {
+    font-size: 18px;
+    color: transparent;
+    background: linear-gradient(90deg, #ff9900, #fff344); 
+    background-clip: text; 
+    border-radius: 0; 
+    padding: 0;
+}
+

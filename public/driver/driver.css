@@ -1,0 +1,297 @@
+
+.layout {
+    display: flex;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-container {
+    flex: 0 0 80px; /* Chiều rộng cố định cho sidebar */
+    margin: 0;
+    padding: 0;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+   
+}
+
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8f8f8;
+}
+
+header {
+    height: 100px;
+}
+
+footer {
+    background: linear-gradient(45deg, #ff9900, #fff344); /* Gradient cam */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+main {
+    display: flex;
+    flex: 1;
+    justify-content: flex-start;
+    padding: 15px;
+}
+
+
+
+.container {
+    display: flex;
+    justify-content: flex-start;
+     /* Tạo 3 cột đều */
+    gap:10px;  /* Khoảng cách giữa các box */
+    width: 100%;
+    max-width: 1200px; /* Giới hạn chiều rộng container */
+}
+
+.box {
+    animation: Pop-up 0.3s ease-in normal;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    height: 250px;
+    color: black;
+    transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 3px solid #ff9900;
+}
+
+.box h2 {
+    font-size: 18px;
+    color: white;
+    background: linear-gradient(45deg, #ff9900, #ffcc33);
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-align: center;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.details p {
+    text-align: left;
+    color: #333;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+/* Đảm bảo các thông tin khác căn trái */
+.box p {
+    width: 100%;
+    text-align: left;
+    color: #ff9900;
+    font-size: 14px;
+    margin: 5px 0;
+    word-wrap: break-word;
+}
+
+@keyframes Pop-up {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) ;
+        opacity: 1;
+    }
+}
+
+
+.modal {
+    transition: top 0.3s;
+    animation: Pop-up 0.3s ease-in normal;
+    display: none;
+    position: fixed;
+    top: 25%;
+    left: 35%;
+    width: 80%;
+    max-width: 500px;
+    max-height: 80vh; /* Giới hạn chiều cao tổng thể của modal */
+    overflow-y: auto; /* Cho phép cuộn bên trong modal nếu cần */
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px; 
+    border: 2px solid #ff9900; 
+    z-index: 10000;
+    color: #ff9900; /* Đặt màu chữ toàn bộ cửa sổ modal */
+}
+
+.modal.open {
+    top:15%;
+}
+
+
+.modal h2,
+.modal p {
+    color: #ff9900; /* Đảm bảo tất cả các phần tử chữ trong modal đều có màu cam */
+}
+.modal-content {
+    text-align: left;
+}
+
+.close {
+    color: #f6a90e;
+    font-size: 28px;
+    font-weight: bold;
+    float: right;
+    position: absolute;
+    top: 10px;  /* Di chuyển lên trên một chút */
+    right: 20px;  /* Căn phải cho phù hợp */
+}
+
+.close:hover,
+.close:focus {
+    color: rgb(208, 104, 0);
+    text-decoration: none;
+}
+/* Thiết lập grid cho tripsHistory */
+#tripHistory {
+    display: flex;
+    flex-direction: column; /* Sắp xếp các phần tử theo cột */
+    gap: 10px;
+    padding: 10px;
+    background: linear-gradient(45deg, #ff9900, #ffcc33); /* Nền cam gradient */
+}
+
+
+/* Mỗi chuyến đi là một hàng */
+.trip-item {
+    display: flex;
+    justify-content: space-between; /* Căn chỉnh các phần tử bên trái và phải */
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: #FFFFFF; /* Màu chữ trắng */
+}
+
+/* Màu trạng thái */
+.trip-item .success {
+    color: green;
+}
+
+.trip-item .failure {
+    color: red;
+}
+
+/* Thanh cuộn của tripHistory */
+#tripHistory {
+    max-height: 200px; /* Giới hạn chiều cao để thanh cuộn xuất hiện */
+    overflow-y: auto; /* Kích hoạt cuộn dọc */
+    background-color: white; /* Nền của danh sách */
+    padding: 10px; /* Tạo khoảng cách nội dung */
+    border-radius: 10px; /* Bo tròn các góc */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng */
+}
+
+/* Định dạng thanh cuộn */
+#tripHistory::-webkit-scrollbar {
+    width: 8px; /* Độ rộng của thanh cuộn */
+}
+
+#tripHistory::-webkit-scrollbar-thumb {
+    background-color: white; /* Màu của thanh cuộn */
+    border-radius: 10px;
+    border: 1px solid #ffcc33;
+    opacity: 0.5; /* Bo tròn góc của thanh cuộn */
+}
+
+
+#tripHistory::-webkit-scrollbar-track {
+    background: transparent;
+    border: 1px solid white ;
+    border-radius: 25px;
+    opacity: 0.5;
+}
+
+
+
+#carDetails {
+    background: linear-gradient(45deg, #ff9900, #ffcc33); /* Gradient màu cam */
+    color: white; /* Màu chữ trắng để dễ đọc trên nền cam */
+    border-radius: 20px; /* Bo tròn hai đầu */
+    padding: 10px;
+    margin-top: 10px;
+}
+
+/* Để nội dung dễ nhìn hơn */
+#carDetails p{
+    color: white; /* Đảm bảo chữ bên trong cũng là màu trắng */
+    font-size: 14px;
+}
+
+.ellipsis {
+    color: #ff9900;
+    cursor: pointer;
+}
+
+
+/* Style cho các nút toggle */
+.toggle-btn {
+    background: none;
+    border: none;
+    color: #ff9900;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+}
+
+.toggle-btn .arrow {
+    transition: transform 0.3s;
+}
+
+.details-info {
+    display: none;
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.details-info.open {
+    display: block;
+}
+
+.details-info p {
+    font-size: 14px;
+    color: #333;
+}
+
+/* Thay đổi hướng mũi tên khi mở rộng thông tin */
+.toggle-btn .arrow.open {
+    transform: rotate(180deg);
+}
+
+

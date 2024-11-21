@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "chart.js": "^4.4.6",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "firebase": "^11.0.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
+  },
+ 
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
