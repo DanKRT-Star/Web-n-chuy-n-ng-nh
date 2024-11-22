@@ -17,3 +17,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOGIN_REGISTER_FIREBASE_D2CD3 }}
           channelId: live
           projectId: login-register-firebase-d2cd3
+          entryPoint: .
