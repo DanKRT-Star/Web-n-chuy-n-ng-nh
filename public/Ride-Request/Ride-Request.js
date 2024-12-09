@@ -94,7 +94,7 @@ function createDiv(content, childClass, parentClass) {
             case 'accepted':
                 div.classList.add('accepted');
                 break;
-            case 'failed':
+            case 'nonAccepted':
                 div.classList.add('failed');
                 break;
             default:
