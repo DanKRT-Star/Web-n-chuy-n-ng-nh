@@ -1,10 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getFirestore, collection, getDocs, doc,  updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, listAll } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBYZ3VzpzdWWshQVVWzBb4LFx8CiPjTW3s",
     authDomain: "login-register-firebase-d2cd3.firebaseapp.com",
-    projectId: "login-register-firebase-d2cd3", // Firestore cần projectId
+    projectId: "login-register-firebase-d2cd3", 
     storageBucket: "login-register-firebase-d2cd3.appspot.com",
     messagingSenderId: "744521823113",
     appId: "1:744521823113:web:90e29139b22aa321a0e758"
@@ -16,6 +17,8 @@ const app = initializeApp(firebaseConfig);
 // Kết nối Firestore
 const db = getFirestore(app);
 
+//kết nối với Storage
+const storage = getStorage(app);
 
 const addProductButton = document.querySelector(".addProductButton");
 addProductButton.addEventListener('click', () => {
@@ -23,7 +26,7 @@ addProductButton.addEventListener('click', () => {
 });
 
 async function fetchAllDocuments() {
-    const querySnapshot = await getDocs(collection(db, "products")); // Thay yourCollectionName bằng tên collection
+    const querySnapshot = await getDocs(collection(db, "products"));
     const data = [];
     querySnapshot.forEach((doc) => {
         const productData = doc.data();
@@ -262,8 +265,42 @@ function openProductModal(isEdit, productData) {
     document.body.appendChild(modalOverlay);
 }
 
+// Hàm tải hình ảnh lên Storage
+async function uploadImageToStorage(file, productId) {
+    try {
+        const imagePath = `image/${productId}/${file.name}`;
+        const imageRef = ref(storage, imagePath);
+
+        // Tải file lên Firebase Storage
+        await uploadBytes(imageRef, file);
+
+        // Lấy URL tải xuống
+        const url = await getDownloadURL(imageRef);
+        return url; // Trả về URL của ảnh
+    } catch (error) {
+        console.error("Error uploading image:", error);
+        throw error;
+    }
+}
+
+// Hàm xóa thư mục chứa hình ảnh
+async function deleteProductImages(productId) {
+    try {
+        const folderRef = ref(storage, `image/${productId}`);
+        const list = await listAll(folderRef);
+
+        // Xóa từng tệp trong thư mục
+        for (const itemRef of list.items) {
+            await deleteObject(itemRef);
+        }
+        console.log(`Deleted all images for product: ${productId}`);
+    } catch (error) {
+        console.error(`Error deleting images for product ${productId}:`, error);
+    }
+}
 
 // Thêm sản phẩm mới vào Firestore
+
 async function addProductToFirestore(productData) {
     try {
         if (!productData.id) {
@@ -271,22 +308,45 @@ async function addProductToFirestore(productData) {
             return;
         }
 
-        const docRef = doc(db, "products", productData.id); // Tạo document với tên là ID
-        await setDoc(docRef, productData); // Thêm dữ liệu
+        // Kiểm tra file hình ảnh
+        const file = document.querySelector('input[type="file"]').files[0];
+        if (file) {
+            const imageUrl = await uploadImageToStorage(file, productData.id);
+            productData.image = imageUrl; // Gán URL ảnh vào productData
+        }
+
+        // Lưu dữ liệu sản phẩm vào Firestore
+        const docRef = doc(db, "products", productData.id);
+        await setDoc(docRef, productData);
         console.log("Product added with ID:", productData.id);
-    } catch (e) {
-        console.error("Error adding document:", e);
+    } catch (error) {
+        console.error("Error adding product:", error);
     }
 }
+
 
 // Cập nhật sản phẩm trong Firestore
 async function updateProductInFirestore(productId, productData) {
     try {
+        const file = document.querySelector('input[type="file"]').files[0];
+        if (file) {
+            // Xóa hình ảnh cũ nếu tồn tại
+            if (productData.image) {
+                const oldImageRef = ref(storage, productData.image.replace("https://firebasestorage.googleapis.com/v0/b/", ""));
+                await deleteObject(oldImageRef).catch((error) => {
+                    console.warn("Error deleting old image (if exists):", error);
+                });
+            }
+
+            const newImageUrl = await uploadImageToStorage(file, productId);
+            productData.image = newImageUrl; // Cập nhật URL ảnh mới
+        }
+
         const docRef = doc(db, "products", productId);
         await updateDoc(docRef, productData);
-        console.log("Product updated with ID: ", productId);
-    } catch (e) {
-        console.error("Error updating document: ", e);
+        console.log("Product updated with ID:", productId);
+    } catch (error) {
+        console.error("Error updating product:", error);
     }
 }
 
@@ -355,10 +415,16 @@ function createNestedDiv(content1, content2, content3, content4, parentClass) {
     return parentDiv;
   }
 
-  async function deleteProductFromFirestore(productId) {
+ // Hàm xóa sản phẩm
+async function deleteProductFromFirestore(productId) {
     try {
+        // Xóa document trong Firestore
         const docRef = doc(db, "products", productId);
-        await deleteDoc(docRef); // Xoá document dựa trên ID
+        await deleteDoc(docRef);
+
+        // Xóa thư mục hình ảnh trong Storage
+        await deleteProductImages(productId);
+
         console.log("Product deleted with ID:", productId);
         fetchAllDocuments(); // Cập nhật lại bảng
     } catch (e) {
