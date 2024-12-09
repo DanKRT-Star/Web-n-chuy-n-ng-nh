@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getFirestore, collection, getDocs, doc,  updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBYZ3VzpzdWWshQVVWzBb4LFx8CiPjTW3s",
@@ -16,6 +17,8 @@ const app = initializeApp(firebaseConfig);
 // Kết nối Firestore
 const db = getFirestore(app);
 
+//kết nối với Storage
+const storage = getStorage(app);
 
 const addProductButton = document.querySelector(".addProductButton");
 addProductButton.addEventListener('click', () => {
@@ -150,6 +153,24 @@ function openProductModal(isEdit, productData) {
             };
             reader.readAsDataURL(file);
         }
+
+        saveButton.onclick = async () => {
+            const file = imageInput.files[0];
+            const newProductData = {
+                image: imagePreview.src || '',
+                name: nameInput.value,
+                id: idInput.value,
+                description: descriptionInput.value,
+                price: priceInput.value
+            };
+        
+            if (isEdit) {
+                await updateProductInFirestore(productData.id, newProductData, file);
+            } else {
+                await addProductToFirestore(newProductData, file);
+            }
+            document.body.removeChild(modalOverlay); // Đóng modal
+        };    
     };
 
     // Các trường thông tin sản phẩm
@@ -420,6 +441,56 @@ function searchTable() {
 // Gắn sự kiện input vào thanh tìm kiếm
 if (searchBar) {
     searchBar.addEventListener('input', searchTable);
+}
+
+// Thêm sản phẩm vào Firestore và lưu hình ảnh vào Storage
+async function addProductToFirestore(productData, file) {
+    try {
+        if (!productData.id) {
+            alert("ID sản phẩm không được để trống!");
+            return;
+        }
+
+        // Tạo thư mục trong Firebase Storage
+        const storageRef = ref(storage, `images/${productData.id}/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const imageURL = await getDownloadURL(storageRef);
+
+        // Cập nhật URL hình ảnh vào dữ liệu sản phẩm
+        productData.image = imageURL;
+
+        const docRef = doc(db, "products", productData.id); // Tạo document với ID
+        await setDoc(docRef, productData); // Thêm dữ liệu
+        console.log("Product added with ID:", productData.id);
+    } catch (e) {
+        console.error("Error adding product:", e);
+    }
+}
+
+// Cập nhật sản phẩm trong Firestore và thay thế hình ảnh
+async function updateProductInFirestore(productId, productData, file) {
+    try {
+        // Nếu có file mới, thay thế hình ảnh cũ
+        if (file) {
+            const oldImageRef = ref(storage, productData.image); // Lấy ref ảnh cũ
+            await deleteObject(oldImageRef).catch(() => {
+                console.log("Old image not found, skipping deletion.");
+            });
+
+            // Upload ảnh mới
+            const newImageRef = ref(storage, `image/${productId}/${file.name}`);
+            await uploadBytes(newImageRef, file);
+            const newImageURL = await getDownloadURL(newImageRef);
+
+            productData.image = newImageURL; // Cập nhật URL hình ảnh mới
+        }
+
+        const docRef = doc(db, "products", productId);
+        await updateDoc(docRef, productData); // Cập nhật dữ liệu Firestore
+        console.log("Product updated with ID:", productId);
+    } catch (e) {
+        console.error("Error updating product:", e);
+    }
 }
 
 
