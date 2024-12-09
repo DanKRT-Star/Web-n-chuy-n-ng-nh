@@ -300,7 +300,6 @@ async function deleteProductImages(productId) {
 }
 
 // Thêm sản phẩm mới vào Firestore
-
 async function addProductToFirestore(productData) {
     try {
         if (!productData.id) {
@@ -324,24 +323,32 @@ async function addProductToFirestore(productData) {
     }
 }
 
-
 // Cập nhật sản phẩm trong Firestore
 async function updateProductInFirestore(productId, productData) {
     try {
         const file = document.querySelector('input[type="file"]').files[0];
-        if (file) {
-            // Xóa hình ảnh cũ nếu tồn tại
-            if (productData.image) {
-                const oldImageRef = ref(storage, productData.image.replace("https://firebasestorage.googleapis.com/v0/b/", ""));
-                await deleteObject(oldImageRef).catch((error) => {
-                    console.warn("Error deleting old image (if exists):", error);
-                });
-            }
 
+        if (file) {
+            const folderPath = `image/${productId}`; // Thư mục chứa ảnh của sản phẩm
+            const folderRef = ref(storage, folderPath);
+
+            // Tải lên ảnh mới
             const newImageUrl = await uploadImageToStorage(file, productId);
-            productData.image = newImageUrl; // Cập nhật URL ảnh mới
+            productData.image = newImageUrl;
+
+            // Xóa tất cả ảnh cũ trong folder trừ ảnh mới
+            const listResult = await listAll(folderRef);
+            for (const item of listResult.items) {
+                if (item.fullPath !== `${folderPath}/${file.name}`) {
+                    await deleteObject(item).catch((error) => {
+                        console.warn("Failed to delete old image:", item.fullPath, error);
+                    });
+                }
+            }
+            console.log("Old images deleted except:", `${folderPath}/${file.name}`);
         }
 
+        // Cập nhật dữ liệu sản phẩm trong Firestore
         const docRef = doc(db, "products", productId);
         await updateDoc(docRef, productData);
         console.log("Product updated with ID:", productId);
