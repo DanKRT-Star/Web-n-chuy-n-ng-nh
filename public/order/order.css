@@ -276,10 +276,6 @@ button:hover {
     animation: Pop-upmodal 0.3s;
 }
 
-p {
-    color: #ff9900;
-    font-weight: bold;
-}
 
 .modalconfirm-content * {
     margin-top: 5px;

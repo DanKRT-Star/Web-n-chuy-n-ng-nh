@@ -85,6 +85,7 @@ onValue(driverRef, (snapshot) => {
         const driverBox = document.createElement("div");
         driverBox.classList.add("box");
         driverBox.innerHTML = `
+            <img src= "${driverData.avatar || "../images/DefaultAvatar.png"}"></img>
             <h2>${driverData.name || "Tên Tài Xế"}</h2>
             <p>ID: ${driverData.id || "N/A"}</p>
             <p>Email: ${driverData.email || "N/A"}</p>

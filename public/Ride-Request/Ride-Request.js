@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import { getDatabase, ref, onChildChanged, onChildAdded, onChildRemoved } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
 // Cấu hình Firebase
 const firebaseConfig = {
@@ -17,59 +17,100 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 
-
-function displayRideRequest() {
+function listenToUpdates() {
     const dbRef = ref(db, 'All Ride Requests');
-    get(dbRef)
-        .then((snapshot) => {
-            if (snapshot.exists()) {
-                const data = [];
-                snapshot.forEach((AllRideRequestSnapshot) => {
-                    const AllRideRequestData = AllRideRequestSnapshot.val();
-                    data.push(AllRideRequestData); // Đẩy dữ liệu vào mảng
-                });
 
-                // Sắp xếp dữ liệu theo thời gian (sớm nhất trước)
-                data.sort((a, b) => {
-                    const timeA = a.time ? new Date(a.time) : new Date(0); // Xử lý nếu không có thời gian
-                    const timeB = b.time ? new Date(b.time) : new Date(0);
-                    return timeB-timeA; // Sắp xếp tăng dần
-                });
+    // Lắng nghe khi dữ liệu con bị thay đổi
+    onChildChanged(dbRef, (snapshot) => {
+        const updatedData = snapshot.val();
+        updateRow(snapshot.key, updatedData); // Cập nhật hàng bị thay đổi
+    });
 
-                // Hiển thị dữ liệu sau khi sắp xếp
-                updateTable(data);
-            } else {
-                console.log("No data available.");
-            }
-        })
-        .catch((error) => {
-            console.error("Error fetching data:", error);
-        });
+    // Lắng nghe khi có dữ liệu con mới
+    onChildAdded(dbRef, (snapshot) => {
+        const newData = snapshot.val();
+        addRow(snapshot.key, newData); // Thêm hàng mới
+    });
+
+    // Lắng nghe khi có dữ liệu con bị xóa
+    onChildRemoved(dbRef, (snapshot) => {
+        removeRow(snapshot.key); // Xóa hàng tương ứng
+    });
 }
 
-function updateTable(data) {
+function updateRow(key, data) {
+    const row = document.querySelector(`[data-key="${key}"]`);
+    if (!row) return; // Nếu không tìm thấy hàng, bỏ qua
+
+    // Cập nhật từng cột của hàng
+    const cells = row.cells;
+    cells[1].innerHTML = createNestedDiv(data.userName, data.userPhone, 'UserInfomation').outerHTML;
+    cells[2].innerHTML = createNestedDiv(
+        data.drivername || "Đang chờ...",
+        data.drivername ? data.driverphone : calculateWaitTime(data.time),
+        'DriverInfomation'
+    ).outerHTML;
+    cells[3].textContent = data.originAddress;
+    const statusCell = row.cells[4];
+    const statusDiv = statusCell.querySelector('.statusform');
+    const newStatus = data.status || "waiting";
+
+    // Nếu trạng thái thay đổi
+    if (!statusDiv.classList.contains(newStatus)) {
+        // Loại bỏ tất cả các class trạng thái cũ
+        statusDiv.classList.remove('ended', 'arrived', 'accepted', 'failed', 'waiting');
+        
+        // Thêm hiệu ứng phóng to khi trạng thái thay đổi
+        statusDiv.classList.add('status-transition');
+
+        // Đặt trạng thái mới
+        statusDiv.classList.add(newStatus);
+        statusDiv.textContent = newStatus; // Cập nhật nội dung nếu cần
+
+        // Gỡ hiệu ứng sau 300ms (tương ứng với thời gian trong CSS)
+        setTimeout(() => {
+            statusDiv.classList.remove('status-transition');
+        }, 300);
+    }
+
+    cells[5].innerHTML = createDiv(formatTime(data.time), null, 'time').outerHTML;
+
+    const ratingDiv = cells[6].querySelector('.rating');
+    renderRating(ratingDiv, data.ratings);
+}
+
+function addRow(key, data) {
     const requestRideTable = document.getElementById("requestRideTable").getElementsByTagName("tbody")[0];
-    requestRideTable.innerHTML = ""; // Xóa dữ liệu cũ trong bảng
-    let index = 1;
+    const row = requestRideTable.insertRow();
+    row.setAttribute("data-key", key); // Gán key để xác định hàng
 
-    data.forEach((AllRideRequestData) => {
-        const row = requestRideTable.insertRow();
-        row.insertCell(0).textContent = index++;
-        row.insertCell(1).appendChild(createNestedDiv(AllRideRequestData.userName, AllRideRequestData.userPhone, 'UserInfomation'));
-        row.insertCell(2).appendChild(createNestedDiv(AllRideRequestData.drivername || "Đang chờ...", AllRideRequestData.driverphone || " ", 'DriverInfomation'));
-        row.insertCell(3).textContent = AllRideRequestData.originAddress;
-        row.insertCell(4).appendChild(createDiv(AllRideRequestData.status || "waiting", null, 'statusform'));
-        row.insertCell(5).appendChild(createDiv(formatTime(AllRideRequestData.time), null, 'time'));
-        const ratingCell = row.insertCell(6); 
-        const ratingDiv = document.createElement('div');
-        ratingDiv.classList.add('rating'); // Thêm class rating vào div
-        ratingCell.appendChild(ratingDiv);
+    row.insertCell(0).textContent = requestRideTable.rows.length; // Số thứ tự
+    row.insertCell(1).appendChild(createNestedDiv(data.userName, data.userPhone, 'UserInfomation'));
+    row.insertCell(2).appendChild(createNestedDiv(
+        data.drivername || "Đang chờ...",
+        data.drivername ? data.driverphone : calculateWaitTime(data.time),
+        'DriverInfomation'
+    ));
+    row.insertCell(3).textContent = data.originAddress;
+    row.insertCell(4).appendChild(createDiv(data.status || "waiting", null, 'statusform'));
+    row.insertCell(5).appendChild(createDiv(formatTime(data.time), null, 'time'));
 
-        // Cập nhật đánh giá sao cho mỗi hàng
-        renderRating(ratingDiv, AllRideRequestData.ratings); // Truyền ratingDiv để render vào đúng vị trí
+    const ratingCell = row.insertCell(6); 
+    const ratingDiv = document.createElement('div');
+    ratingDiv.classList.add('rating');
+    ratingCell.appendChild(ratingDiv);
+    renderRating(ratingDiv, data.ratings);
 
-        row.style.animationDelay = `${index * 0.1}s`;
-    });
+    // Thêm hiệu ứng cho hàng mới
+    row.classList.add('row-added');
+    setTimeout(() => {
+        row.classList.remove('row-added');
+    }, 1000);
+}
+
+function removeRow(key) {
+    const row = document.querySelector(`[data-key="${key}"]`);
+    if (row) row.remove(); // Xóa hàng nếu tồn tại
 }
 
 function formatTime(timestamp) {
@@ -77,6 +118,19 @@ function formatTime(timestamp) {
     const date = new Date(timestamp);
     return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
   }
+
+  function calculateWaitTime(startTime) {
+    const startTimestamp = new Date(startTime).getTime();
+    const now = new Date().getTime();
+    const diffInSeconds = Math.floor((now - startTimestamp) / 1000);
+
+    const hours = Math.floor(diffInSeconds / 3600).toString().padStart(2, '0');
+    const minutes = Math.floor((diffInSeconds % 3600) / 60).toString().padStart(2, '0');
+    const seconds = (diffInSeconds % 60).toString().padStart(2, '0');
+
+    return `${hours}:${minutes}:${seconds}`;
+}
+
 
 function createDiv(content, childClass, parentClass) {
     const div = document.createElement('div');
@@ -206,6 +260,28 @@ if (searchBar) {
     searchBar.addEventListener('input', searchTable);
 }
 
+setInterval(() => {
+    const driverInfoElements = document.querySelectorAll('.DriverInfomation');
 
+    driverInfoElements.forEach((element) => {
+        const driverName = element.querySelector('.Name').textContent;
+        const phoneElement = element.querySelector('.Phone');
 
-  window.onload = displayRideRequest;
+        // Cập nhật thời gian chờ nếu tài xế đang chờ
+        if (driverName === "Đang chờ...") {
+            const row = element.closest('tr');
+            const timeCell = row.cells[5].querySelector('.time');
+            const requestTime = timeCell.textContent;
+
+            // Chuyển đổi định dạng thời gian từ dd/mm/yyyy hh:mm thành timestamp
+            const [datePart, timePart] = requestTime.split(' ');
+            const [day, month, year] = datePart.split('/');
+            const [hours, minutes] = timePart.split(':');
+            const formattedTime = new Date(`${year}-${month}-${day}T${hours}:${minutes}:00`);
+
+            phoneElement.textContent = calculateWaitTime(formattedTime);
+        }
+    });
+}, 1000);
+
+listenToUpdates();

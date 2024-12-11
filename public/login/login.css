@@ -9,6 +9,8 @@
 /* Định dạng chung */
 body {
     background-image: url('../images/Background.png'); /* Đặt ảnh nền */
+    background-size: cover; /* Đảm bảo ảnh nền bao phủ toàn màn hình */
+    background-attachment: fixed; /* Ảnh nền cố định khi cuộn */
     background-size: cover; /* Điều chỉnh ảnh để che phủ toàn bộ nền */
     background-repeat: no-repeat; /* Không lặp lại ảnh */
     background-position: center; /* Căn giữa ảnh */
@@ -57,6 +59,7 @@ header {
 
 header h1 {
     margin: 0;
+    font-size: clamp(1rem, 2.5vw, 1.5rem); /* Kích thước tự điều chỉnh */
 }
 .login-form input {
     width: 100%;
@@ -153,6 +156,33 @@ input[type="password"], input[type="text"] {
     width: 24px; /* Kích thước icon */
     height: 24px; /* Kích thước icon */
     opacity: 0.9;
+}
+
+/* Điều chỉnh cho màn hình nhỏ */
+@media (max-width: 768px) {
+    .login-container {
+        max-width: 90%; /* Giảm chiều rộng tối đa */
+        padding: 1.5rem; /* Giảm khoảng cách padding */
+    }
+
+    header h1 {
+        font-size: 1.2rem; /* Giảm kích thước chữ */
+    }
+
+    .login-form input {
+        font-size: 0.9rem; /* Giảm kích thước chữ trong ô nhập */
+        padding: 0.6rem; /* Giảm padding trong ô nhập */
+    }
+
+    button[type="submit"] {
+        padding: 0.6rem; /* Giảm padding nút */
+        font-size: 0.9rem; /* Giảm kích thước chữ trên nút */
+    }
+
+    img#togglePassword {
+        width: 20px; /* Điều chỉnh kích thước icon */
+        height: 20px;
+    }
 }
 
 
