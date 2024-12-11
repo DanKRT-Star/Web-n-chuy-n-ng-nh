@@ -32,7 +32,7 @@ function displayUsers() {
 
                 // Insert data into the cells
                 row.insertCell(0).textContent = index++;
-                row.insertCell(1).textContent = userData.name || "N/A";
+                row.insertCell(1).appendChild(createNestedDiv(userData.avatar, userData.name, 'UserInfomation'));
                 row.insertCell(2).textContent = userData.id || "N/A";
                 row.insertCell(3).textContent = userData.email || "N/A";
                 row.insertCell(4).textContent = userData.phone || "N/A";
@@ -47,6 +47,40 @@ function displayUsers() {
         console.error("Error fetching data:", error);
     });
 }
+
+function createNestedDiv(content1, content2, parentClass) {
+    const parentDiv = document.createElement('div');
+    parentDiv.classList.add(parentClass); // Add class to parent div
+  
+    // Create two child divs
+    const childDiv1 = document.createElement('div');
+    const img = document.createElement("img");
+    if (content1) {
+        img.src = content1; // Gán URL vào src
+    }
+    else {
+        img.src = "../images/DefaultAvatar.png";
+    }
+    img.style.width = "30px"; // Tùy chỉnh kích thước (có thể thay đổi)
+    img.style.height = "auto";
+    img.style.borderRadius = "25px";
+    childDiv1.appendChild(img);
+    childDiv1.style.marginRight = "5px";
+    childDiv1.classList.add('Avatar'); 
+  
+    const childDiv2 = document.createElement('div');
+    childDiv2.textContent = content2;
+    childDiv2.classList.add('Name');
+  
+    // Append child divs to the parent div
+    parentDiv.appendChild(childDiv1);
+    parentDiv.appendChild(childDiv2);
+    parentDiv.style.display = "flex";
+    parentDiv.style.alignItems = "center";
+  
+    return parentDiv;
+  }
+
 
 // Lấy thanh tìm kiếm 
 const searchBar = document.querySelector('.search-bar');

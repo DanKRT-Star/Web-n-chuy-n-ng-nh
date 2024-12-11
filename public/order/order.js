@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc,  updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, doc,  updateDoc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, listAll } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
 const firebaseConfig = {
@@ -25,15 +25,17 @@ addProductButton.addEventListener('click', () => {
     openProductModal(false, {}); // Tham số false là để mở modal thêm mới, và {} là đối tượng trống (chưa có sản phẩm)
 });
 
-async function fetchAllDocuments() {
-    const querySnapshot = await getDocs(collection(db, "products"));
-    const data = [];
-    querySnapshot.forEach((doc) => {
-        const productData = doc.data();
-        data.push(productData)
-    });
+function fetchAllDocuments() {
+    const productsRef = collection(db, "products"); // Tham chiếu đến collection "products"
+    onSnapshot(productsRef, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+            const productData = doc.data();
+            data.push(productData);
+        });
 
-    updateTable(data);
+        updateTable(data); // Cập nhật giao diện với dữ liệu mới
+    });
 }
 
 async function updateTable(data) {
@@ -433,7 +435,6 @@ async function deleteProductFromFirestore(productId) {
         await deleteProductImages(productId);
 
         console.log("Product deleted with ID:", productId);
-        fetchAllDocuments(); // Cập nhật lại bảng
     } catch (e) {
         console.error("Error deleting document:", e);
     }

@@ -183,6 +183,11 @@ tbody tr {
     color: black;
     display: inline-block;
     text-align: center;
+    transition: background-color 0.5s ease, transform 0.3s ease; /* Hiệu ứng chuyển màu và phóng to */
+}
+
+.statusform.status-transition {
+    transform: scale(1.1);
 }
 
 .statusform.ended {
@@ -239,5 +244,21 @@ th:first-child, td:first-child {
 
 .star {
     color:#ff9900;
+}
+
+/* Hiệu ứng mượt khi hàng mới được thêm */
+.row-added {
+    animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
