@@ -40,7 +40,6 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
     text-align: center;
-    backdrop-filter: blur(10px);
 }
 
 header {
@@ -163,6 +162,7 @@ input[type="password"], input[type="text"] {
     .login-container {
         max-width: 90%; /* Giảm chiều rộng tối đa */
         padding: 1.5rem; /* Giảm khoảng cách padding */
+        backdrop-filter: blur(10px);
     }
 
     header h1 {

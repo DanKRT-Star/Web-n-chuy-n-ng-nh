@@ -284,4 +284,127 @@ setInterval(() => {
     });
 }, 1000);
 
+
+let currentFilters = {
+    status: null,
+    time: null,
+};
+
+let activeFilterType = null; // Theo dõi tiêu đề nào đang hiển thị danh sách lọc
+
+document.getElementById('statusHeader').addEventListener('click', () => {
+    toggleFilterOptions('status');
+});
+
+document.getElementById('timeHeader').addEventListener('click', () => {
+    toggleFilterOptions('time');
+});
+
+function toggleFilterOptions(type) {
+    // Kiểm tra xem danh sách hiện tại có mở không
+    if (activeFilterType === type) {
+        const existingFilter = document.querySelector('.filter-options');
+        if (existingFilter) existingFilter.remove(); // Đóng danh sách hiện tại
+        activeFilterType = null; // Đặt trạng thái không mở
+        return;
+    }
+
+    showFilterOptions(type);
+    activeFilterType = type; // Ghi nhận tiêu đề đang mở danh sách
+}
+
+function showFilterOptions(type) {
+    let options = [];
+    if (type === 'status') {
+        options = ['All', 'ended', 'arrived', 'accepted', 'failed', 'waiting'];
+    } else if (type === 'time') {
+        options = ['Mới nhất', 'Cũ nhất'];
+    }
+
+    // Tạo và hiển thị danh sách lọc
+    const filterContainer = document.createElement('ul');
+    filterContainer.classList.add('filter-options');
+
+    options.forEach(option => {
+        const li = document.createElement('li');
+        li.textContent = option;
+        li.addEventListener('click', () => {
+            filterTable(type, option); // Gọi hàm lọc khi chọn một lựa chọn
+            filterContainer.remove(); // Ẩn danh sách lọc sau khi chọn
+            activeFilterType = null; // Đặt trạng thái không mở
+        });
+        filterContainer.appendChild(li);
+    });
+
+    // Xóa danh sách cũ nếu có
+    const existingFilter = document.querySelector('.filter-options');
+    if (existingFilter) existingFilter.remove();
+
+    // Thêm danh sách mới vào DOM
+    document.body.appendChild(filterContainer);
+
+    // Đặt vị trí cho danh sách lọc
+    const header = document.getElementById(`${type}Header`);
+    const rect = header.getBoundingClientRect();
+    filterContainer.style.left = `${rect.left}px`;
+    filterContainer.style.top = `${rect.bottom + window.scrollY}px`;
+}
+
+function filterTable(type, option) {
+    // Cập nhật bộ lọc hiện tại
+    currentFilters[type] = option;
+
+    const tableBody = document.querySelector("#requestRideTable tbody");
+    const rows = Array.from(tableBody.querySelectorAll('tr'));
+
+    // Lọc theo trạng thái (nếu có bộ lọc trạng thái)
+    rows.forEach((row, index) => {
+        let isValid = true;
+
+        // Lọc theo trạng thái
+        if (currentFilters.status && currentFilters.status !== 'All') {
+            const statusCell = row.cells[4];
+            const statusDiv = statusCell.querySelector('.statusform');
+            isValid = statusDiv && statusDiv.textContent.toLowerCase() === currentFilters.status.toLowerCase();
+        }
+
+        // Hiển thị hoặc ẩn hàng
+        if (isValid) {
+            row.style.display = '';  // Hiện hàng nếu hợp lệ
+        } else {
+            row.style.display = 'none';  // Ẩn hàng nếu không hợp lệ
+        }
+    });
+
+    // Lọc các hàng còn lại theo thời gian nếu có
+    const visibleRows = Array.from(tableBody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+
+    // Sắp xếp theo thời gian nếu cần
+    if (currentFilters.time) {
+        visibleRows.sort((rowA, rowB) => {
+            const timeA = new Date(rowA.cells[5].textContent.replace(/(\d+)\/(\d+)\/(\d+) (\d+):(\d+)/, '$3-$2-$1T$4:$5'));
+            const timeB = new Date(rowB.cells[5].textContent.replace(/(\d+)\/(\d+)\/(\d+) (\d+):(\d+)/, '$3-$2-$1T$4:$5'));
+            return currentFilters.time === 'Newest First' ? timeB - timeA : timeA - timeB;
+        });
+    }
+
+    // Cập nhật lại số thứ tự sau khi lọc và sắp xếp
+    visibleRows.forEach((row, index) => {
+        row.cells[0].textContent = index + 1; // Cập nhật lại số thứ tự
+        tableBody.appendChild(row); // Đảm bảo hàng đã được cập nhật số thứ tự được thêm lại đúng vị trí
+    });
+}
+
+
+
+
+// Đóng danh sách lọc khi nhấp ra ngoài
+document.addEventListener('click', (e) => {
+    const filterOptions = document.querySelector('.filter-options');
+    if (filterOptions && !filterOptions.contains(e.target) && !e.target.closest('#statusHeader, #timeHeader')) {
+        filterOptions.remove(); // Đóng danh sách lọc
+        activeFilterType = null; // Đặt trạng thái không mở
+    }
+});
+
 listenToUpdates();

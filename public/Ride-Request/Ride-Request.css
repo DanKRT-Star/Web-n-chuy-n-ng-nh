@@ -262,3 +262,33 @@ th:first-child, td:first-child {
     }
 }
 
+.filter-options {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    width: 150px; 
+    font-size: 10px; 
+    height: fit-content;
+    overflow-y: auto;
+    margin: 0; 
+    padding: 0; 
+}
+
+.filter-options li {
+    cursor: pointer;
+    padding: 3px 10px; /* Giảm khoảng cách giữa các mục */
+    margin: 0; /* Loại bỏ margin */
+    line-height: 1.2; /* Giảm khoảng cách giữa các dòng văn bản */
+    font-size: 14px; /* Đảm bảo kích thước chữ trong mục lựa chọn */
+}
+
+.filter-options li:hover {
+    background-color: #f0f0f0;
+}
+
+.filter {
+    font-size: 18px;
+}
+

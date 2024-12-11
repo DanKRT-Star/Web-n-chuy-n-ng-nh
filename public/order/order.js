@@ -25,41 +25,90 @@ addProductButton.addEventListener('click', () => {
     openProductModal(false, {}); // Tham số false là để mở modal thêm mới, và {} là đối tượng trống (chưa có sản phẩm)
 });
 
-function fetchAllDocuments() {
-    const productsRef = collection(db, "products"); // Tham chiếu đến collection "products"
-    onSnapshot(productsRef, (querySnapshot) => {
-        const data = [];
-        querySnapshot.forEach((doc) => {
-            const productData = doc.data();
-            data.push(productData);
+function listenToUpdates() {
+    const productsRef = collection(db, "products");
+
+    // Lắng nghe khi dữ liệu được thêm
+    onSnapshot(productsRef, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            const productData = change.doc.data();
+            const productId = change.doc.id;
+
+            if (change.type === "added") {
+                addRow(productId, productData); // Thêm sản phẩm mới
+            } else if (change.type === "modified") {
+                updateRow(productId, productData); // Cập nhật sản phẩm
+            } else if (change.type === "removed") {
+                removeRow(productId); // Xóa sản phẩm
+            }
         });
-
-        updateTable(data); // Cập nhật giao diện với dữ liệu mới
     });
 }
 
-async function updateTable(data) {
-    try {
-        const productTable = document.getElementById("productTable").getElementsByTagName("tbody")[0];
-        productTable.innerHTML = ""; // Xóa dữ liệu cũ trong bảng
-        let index = 1;
+function addRow(productId, productData) {
+    const productTable = document.getElementById("productTable").getElementsByTagName("tbody")[0];
+    const existingRow = document.querySelector(`[data-key="${productId}"]`);
+    if (existingRow) return; // Bỏ qua nếu hàng đã tồn tại
 
-        data.forEach((productData) => {
-        const row = productTable.insertRow();
-        row.insertCell(0).textContent = index++;
-        row.insertCell(1).appendChild(createImgDiv(productData.image, "ProductImage", "Image"));
-        row.insertCell(2).appendChild(createNestedDiv(productData.name,"ID: " + productData.id, productData.description, "giá: " + productData.price));
-        row.insertCell(3).appendChild(create2ButtonDiv("Button", productData))
+    const row = productTable.insertRow();
+    row.setAttribute("data-key", productId); // Gán key để xác định hàng
 
-        row.style.animationDelay = `${index * 0.1}s`;
-    });
-    addDeleteEventListeners(data);
-    }catch (error) {
-        console.error("Error fetching products:", error);
+    row.insertCell(0).textContent = productTable.rows.length; // Số thứ tự
+    row.insertCell(1).appendChild(createImgDiv(productData.image, "ProductImage", "Image"));
+    row.insertCell(2).appendChild(createNestedDiv(productData.name, "ID: " + productData.id, productData.description, "Giá: " + productData.price, "ProductInfo"));
+
+    const buttonDiv = create2ButtonDiv("Button", productData, productId);
+    row.insertCell(3).appendChild(buttonDiv);
+
+    row.classList.add("row-added"); // Thêm hiệu ứng cho hàng mới
+    setTimeout(() => {
+        row.classList.remove("row-added");
+    }, 1000);
+}
+
+
+function updateRow(productId, productData) {
+    const row = document.querySelector(`[data-key="${productId}"]`);
+    if (!row) return; // Nếu không tìm thấy hàng, bỏ qua
+
+    const cells = row.cells;
+
+    // Cập nhật từng cột của hàng
+    cells[1].innerHTML = createImgDiv(productData.image, "ProductImage", "Image").outerHTML;
+    cells[2].innerHTML = createNestedDiv(productData.name, "ID: " + productData.id, productData.description, "Giá: " + productData.price, "ProductInfo").outerHTML;
+
+    const buttonDiv = create2ButtonDiv("Button", productData);
+    cells[3].innerHTML = ""; // Xóa nội dung cũ
+    cells[3].appendChild(buttonDiv);
+
+    row.classList.add("row-updated"); // Thêm hiệu ứng khi cập nhật
+    setTimeout(() => {
+        row.classList.remove("row-updated");
+    }, 1000);
+}
+
+function removeRow(productId) {
+    const row = document.querySelector(`[data-key="${productId}"]`);
+    if (row) {
+        row.remove(); // Xóa hàng ngay lập tức
+        updateRowNumbers(); // Cập nhật lại số thứ tự cho các hàng còn lại
     }
-    
-
 }
+
+
+
+
+function updateRowNumbers() {
+    const rows = document.querySelectorAll("#productTable tbody tr");
+    rows.forEach((row, index) => {
+        const cell = row.cells[0]; // Lấy cột số thứ tự
+        if (cell) {
+            cell.textContent = index + 1; // Cập nhật lại số thứ tự
+        }
+    });
+}
+
+
 
 function createImgDiv(content, className, label) {
     const div = document.createElement("div");
@@ -81,7 +130,7 @@ function createImgDiv(content, className, label) {
 }
 
 // Sửa lại phần tạo button trong hàm updateTable
-function create2ButtonDiv(parentClass, productData) {
+function create2ButtonDiv(parentClass, productData, productId) {
     const div = document.createElement('div');
     div.classList = parentClass;
     div.style.display = "flex";
@@ -98,17 +147,22 @@ function create2ButtonDiv(parentClass, productData) {
     icondelete.classList.add("bx", "bxs-trash", "icon");
     deleteButton.appendChild(icondelete);
 
-    // Thêm sự kiện cho nút settingButton để mở modal chỉnh sửa
+    // Gán sự kiện mở modal chỉnh sửa
     settingButton.addEventListener('click', () => {
         openProductModal(true, productData); // Mở modal chỉnh sửa sản phẩm
     });
 
-    // Thêm các button vào div
+    // Gán sự kiện xóa sản phẩm
+    deleteButton.addEventListener('click', () => {
+        openDeleteConfirmationModal(productId);
+    });
+
     div.appendChild(settingButton);
     div.appendChild(deleteButton);
 
     return div;
 }
+
 
 
 function openProductModal(isEdit, productData) {
@@ -360,12 +414,12 @@ async function updateProductInFirestore(productId, productData) {
 }
 
 function openDeleteConfirmationModal(productId) {
+    // Tạo overlay cho modal
     const modalOverlay = document.createElement('div');
     modalOverlay.classList.add('modal-overlay');
 
     const modalContent = document.createElement('div');
     modalContent.classList.add('modalconfirm-content');
-
 
     // Nội dung modal
     const message = document.createElement('p');
@@ -375,16 +429,20 @@ function openDeleteConfirmationModal(productId) {
     confirmButton.classList.add("confirmButton");
     confirmButton.textContent = 'Xác nhận';
     confirmButton.style.marginRight = '10px';
+
+    // Sự kiện xác nhận
     confirmButton.onclick = async () => {
-        await deleteProductFromFirestore(productId);
-        document.body.removeChild(modalOverlay); // Đóng modal
+        document.body.removeChild(modalOverlay); // Đóng modal ngay lập tức
+        await deleteProductFromFirestore(productId); // Tiến hành xóa sản phẩm
     };
 
     const cancelButton = document.createElement('button');
     cancelButton.classList.add("cancelButton");
     cancelButton.textContent = 'Hủy bỏ';
+
+    // Sự kiện hủy bỏ
     cancelButton.onclick = () => {
-        document.body.removeChild(modalOverlay); // Đóng modal
+        document.body.removeChild(modalOverlay); // Đóng modal ngay lập tức
     };
 
     modalContent.appendChild(message);
@@ -393,6 +451,8 @@ function openDeleteConfirmationModal(productId) {
     modalOverlay.appendChild(modalContent);
     document.body.appendChild(modalOverlay);
 }
+
+
 
 
 function createNestedDiv(content1, content2, content3, content4, parentClass) {
@@ -425,7 +485,7 @@ function createNestedDiv(content1, content2, content3, content4, parentClass) {
   }
 
  // Hàm xóa sản phẩm
-async function deleteProductFromFirestore(productId) {
+ async function deleteProductFromFirestore(productId) {
     try {
         // Xóa document trong Firestore
         const docRef = doc(db, "products", productId);
@@ -435,19 +495,10 @@ async function deleteProductFromFirestore(productId) {
         await deleteProductImages(productId);
 
         console.log("Product deleted with ID:", productId);
-    } catch (e) {
-        console.error("Error deleting document:", e);
+    } catch (error) {
+        console.error("Error deleting product:", error);
+        throw error; // Ném lỗi để xử lý ở cấp cao hơn
     }
-}
-
-function addDeleteEventListeners(data) {
-    const deleteButtons = document.querySelectorAll(".deleteButton");
-    deleteButtons.forEach((button, index) => {
-        button.addEventListener("click", () => {
-            const productId = data[index].id; // Lấy ID của sản phẩm tương ứng
-            openDeleteConfirmationModal(productId);
-        });
-    });
 }
 
 // Lấy thanh tìm kiếm 
@@ -499,4 +550,4 @@ if (searchBar) {
 
 
 
-window.onload = fetchAllDocuments
+window.onload = listenToUpdates
