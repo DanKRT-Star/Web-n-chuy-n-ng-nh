@@ -27,7 +27,7 @@ function paymentDisplay() {
                     data.push(AllRideRequestData); // Đẩy dữ liệu vào mảng
                 });
 
-                const endedData = data.filter((rideRequest) => rideRequest.status && rideRequest.status.toLowerCase() === 'ended');
+                const endedData = data.filter((rideRequest) => rideRequest.status);
 
 
                 // Sắp xếp dữ liệu theo thời gian (sớm nhất trước)
@@ -60,21 +60,30 @@ function updateTable(data) {
         row.insertCell(1).appendChild(createNestedDiv(AllRideRequestData.userName, AllRideRequestData.userPhone, 'UserInfomation'));
         row.insertCell(2).appendChild(createDiv(formatTime(AllRideRequestData.time), null, 'time'));
         row.insertCell(3).appendChild(createDiv(AllRideRequestData.fareAmount, null, 'Amount'));
-        row.insertCell(4).appendChild(createDiv(paid_status(AllRideRequestData['Pay Status'])));
+
+        // Kiểm tra trạng thái thanh toán
+        const payStatus = paid_status(AllRideRequestData['Pay Status']);
+        row.insertCell(4).appendChild(createDiv(payStatus ? payStatus : "Chưa thanh toán", null, 'PayStatus'));
+
         const payInfo = AllRideRequestData['Pay Information'];
-        if (payInfo['Pay Method'] === "Cash") {
-            const cashDiv = document.createElement('div'); // Tạo một thẻ div
-            cashDiv.textContent = "Tiền mặt"; // Gán nội dung
-            cashDiv.classList.add('cash-method'); // Thêm class nếu cần (tùy chỉnh CSS)
-            row.insertCell(5).appendChild(cashDiv); // Thêm div vào ô
+
+        // Nếu pay status là "Not Paid", để trống phương thức thanh toán
+        if (AllRideRequestData['Pay Status'] === "Not Paid") {
+            row.insertCell(5).appendChild(createDiv('', null, 'PayMethod'));
+        } else if (payInfo['Pay Method'] === "Cash") {
+            const cashDiv = document.createElement('div'); 
+            cashDiv.textContent = "Tiền mặt"; 
+            cashDiv.classList.add('cash-method'); 
+            row.insertCell(5).appendChild(cashDiv);
         } else {
             const paymentInfoButton = payby(payInfo);
-            row.insertCell(5).appendChild(paymentInfoButton); // Thêm nút vào DOM
+            row.insertCell(5).appendChild(paymentInfoButton); 
         }
 
         row.style.animationDelay = `${index * 0.1}s`;
-    })    
+    });
 }
+
 
 function payby(payInfo) {
     if (payInfo['Pay Method'] === "Cash") {
