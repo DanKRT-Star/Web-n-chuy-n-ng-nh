@@ -11,6 +11,7 @@
     flex: 0 0 80px; /* Chiều rộng cố định cho sidebar */
     margin: 0;
     padding: 0;
+    z-index: 1000;
 }
 
 .main-content {
@@ -128,7 +129,7 @@ main {
     border-radius: 50%;
     position:absolute;
     border: solid 1px #ff9900;
-    z-index: 1001;
+    z-index: 100;
 }
 
 .avatar {
@@ -137,9 +138,8 @@ main {
     height: 80px;
     margin-top: 65px;
     border-radius: 50%;
-    position:absolute;
+    position: relative;
     border: solid 1px #ff9900;
-    z-index: 1001;
     color: #FFFFFF;
 }
 

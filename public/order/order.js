@@ -22,7 +22,7 @@ const storage = getStorage(app);
 
 const addProductButton = document.querySelector(".addProductButton");
 addProductButton.addEventListener('click', () => {
-    openProductModal(false, {}); // Tham số false là để mở modal thêm mới, và {} là đối tượng trống (chưa có sản phẩm)
+    openProductModal(false, {}); 
 });
 
 function listenToUpdates() {

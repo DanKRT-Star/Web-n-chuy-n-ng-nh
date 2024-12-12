@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import { getDatabase, ref, onChildChanged, onChildAdded, onChildRemoved } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
 // Cấu hình Firebase
 const firebaseConfig = {
@@ -16,87 +16,111 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-function paymentDisplay() {
+function listenToUpdates() {
     const dbRef = ref(db, 'All Ride Requests');
-    get(dbRef)
-        .then((snapshot) => {
-            if (snapshot.exists()) {
-                const data = [];
-                snapshot.forEach((AllRideRequestSnapshot) => {
-                    const AllRideRequestData = AllRideRequestSnapshot.val();
-                    data.push(AllRideRequestData); // Đẩy dữ liệu vào mảng
-                });
 
-                const endedData = data.filter((rideRequest) => rideRequest.status);
+    // Lắng nghe khi dữ liệu con bị thay đổi
+    onChildChanged(dbRef, (snapshot) => {
+        const updatedData = snapshot.val();
+        updateRow(snapshot.key, updatedData); // Cập nhật hàng bị thay đổi
+    });
 
+    // Lắng nghe khi có dữ liệu con mới
+    onChildAdded(dbRef, (snapshot) => {
+        const newData = snapshot.val();
+        addRow(snapshot.key, newData); // Thêm hàng mới
+    });
 
-                // Sắp xếp dữ liệu theo thời gian (sớm nhất trước)
-                const SortData = endedData.sort((a,b) => {
-                    const timeA = a.time ? new Date(a.time) : new Date(0); // Xử lý nếu không có thời gian
-                    const timeB = b.time ? new Date(b.time) : new Date(0);
-                    return timeB-timeA; // Sắp xếp tăng dần
-                });
-
-                // Hiển thị dữ liệu sau khi sắp xếp
-                updateTable(SortData);
-            } else {
-                console.log("No data available.");
-            }
-        })
-        .catch((error) => {
-            console.error("Error fetching data:", error);
-        });
-}
-
-function updateTable(data) {
-    const requestRideTable = document.getElementById("paymentTable").getElementsByTagName("tbody")[0];
-    requestRideTable.innerHTML = ""; // Xóa dữ liệu cũ trong bảng
-    
-    let index = 1;
-
-    data.forEach((AllRideRequestData) => {
-        const row = requestRideTable.insertRow();
-        row.insertCell(0).textContent = index++;
-        row.insertCell(1).appendChild(createNestedDiv(AllRideRequestData.userName, AllRideRequestData.userPhone, 'UserInfomation'));
-        row.insertCell(2).appendChild(createDiv(formatTime(AllRideRequestData.time), null, 'time'));
-        row.insertCell(3).appendChild(createDiv(AllRideRequestData.fareAmount, null, 'Amount'));
-
-        // Kiểm tra trạng thái thanh toán
-        const payStatus = paid_status(AllRideRequestData['Pay Status']);
-        row.insertCell(4).appendChild(createDiv(payStatus ? payStatus : "Chưa thanh toán", null, 'PayStatus'));
-
-        const payInfo = AllRideRequestData['Pay Information'];
-
-        // Nếu pay status là "Not Paid", để trống phương thức thanh toán
-        if (AllRideRequestData['Pay Status'] === "Not Paid") {
-            row.insertCell(5).appendChild(createDiv('', null, 'PayMethod'));
-        } else if (payInfo['Pay Method'] === "Cash") {
-            const cashDiv = document.createElement('div'); 
-            cashDiv.textContent = "Tiền mặt"; 
-            cashDiv.classList.add('cash-method'); 
-            row.insertCell(5).appendChild(cashDiv);
-        } else {
-            const paymentInfoButton = payby(payInfo);
-            row.insertCell(5).appendChild(paymentInfoButton); 
-        }
-
-        row.style.animationDelay = `${index * 0.1}s`;
+    // Lắng nghe khi có dữ liệu con bị xóa
+    onChildRemoved(dbRef, (snapshot) => {
+        removeRow(snapshot.key); // Xóa hàng tương ứng
     });
 }
 
+function updateRow(key, data) {
+    const row = document.querySelector(`[data-key="${key}"]`);
+    if (!row) return; // Nếu không tìm thấy hàng, bỏ qua
 
-function payby(payInfo) {
-    if (payInfo['Pay Method'] === "Cash") {
-        return "tiền mặt";
-    } else {
-        const paymentInfoButton = document.createElement('button');
-        paymentInfoButton.textContent = "Chuyển khoản";
-        paymentInfoButton.onclick = () => BankInfomation(payInfo); // Truyền toàn bộ thông tin thanh toán
-        return paymentInfoButton;
+    // Cập nhật từng cột của hàng
+    const cells = row.cells;
+    cells[1].innerHTML = createNestedDiv(data.userName, data.userPhone, 'UserInfomation').outerHTML;
+    cells[2].innerHTML = createDiv(formatTime(data.time), null, 'time').outerHTML;
+    cells[3].innerHTML = createDiv(data.fareAmount, null, "Amount").outerHTML;
+    const payInfo = data['Pay Information'] || {};
+    const PaidstatusCell = row.cells[4];
+    const PaidstatusDiv = PaidstatusCell.querySelector('.PayStatus');
+    const newPaidStatus = data['Pay Status'];
+
+    // Nếu trạng thái thay đổi
+    if (!PaidstatusDiv.classList.contains(newPaidStatus)) {
+        // Loại bỏ tất cả các class trạng thái cũ
+        PaidstatusDiv.classList.remove('Paid', 'NotPaid');
+        
+        // Thêm hiệu ứng phóng to khi trạng thái thay đổi
+        PaidstatusDiv.classList.add('status-transition');
+
+        // Đặt trạng thái mới
+        if (newPaidStatus === 'Paid') {
+            PaidstatusDiv.classList.add(newPaidStatus);
+        } else {
+            PaidstatusDiv.classList.add('NotPaid');
+        };
+        PaidstatusDiv.textContent = (newPaidStatus === 'Paid') ? "Đã thanh toán" : "Chưa thanh toán"; // Cập nhật nội dung nếu cần
+
+        // Gỡ hiệu ứng sau 300ms (tương ứng với thời gian trong CSS)
+        setTimeout(() => {
+            PaidstatusDiv.classList.remove('status-transition');
+        }, 300);
+    }
+    const PayMethodCell = row.cells[5];
+    const PayMethodDiv = PayMethodCell.querySelector('.PayMethod');
+    const newPayMethod = payInfo['Pay Method'] || null;
+
+     // Nếu trạng thái thay đổi
+     if (!PayMethodDiv.classList.contains(newPayMethod)) {
+        // Loại bỏ tất cả các class trạng thái cũ
+        PayMethodDiv.classList.remove('Cash', 'Banking');
+        
+        // Thêm hiệu ứng phóng to khi trạng thái thay đổi
+        PayMethodDiv.classList.add('status-transition');
+
+        // Đặt trạng thái mới
+        PayMethodDiv.classList.add(newPayMethod);
+        PayMethodDiv.textContent = (newPayMethod === null)? null : (newPayMethod === "Cash")? "Tiền mặt":"Chuyển khoản"; // Cập nhật nội dung nếu cần
+
+        // Gỡ hiệu ứng sau 300ms (tương ứng với thời gian trong CSS)
+        setTimeout(() => {
+            PayMethodDiv.classList.remove('status-transition');
+        }, 300);
+
     }
 }
 
+function addRow(key, data) {
+    const requestRideTable = document.getElementById("paymentTable").getElementsByTagName("tbody")[0];
+    const row = requestRideTable.insertRow();
+    const payInfo = data['Pay Information'] || {};
 
+    row.setAttribute("data-key", key); // Gán key để xác định hàng
+    row.insertCell(0).textContent = requestRideTable.rows.length; // Số thứ tự
+    row.insertCell(1).appendChild(createNestedDiv(data.userName, data.userPhone, 'UserInfomation'));
+    row.insertCell(2).appendChild(createDiv(formatTime(data.time), null, 'time'));
+    row.insertCell(3).appendChild(createDiv(data.fareAmount, null, 'Amount'));
+    const PaidStatus = data['Pay Status'];
+    row.insertCell(4).appendChild(createDiv((PaidStatus === "Paid")? 'Đã thanh toán':'Chưa thanh toán', (PaidStatus === "Paid")? 'Paid':'NotPaid', 'PayStatus'));
+    const PayMethod = payInfo['Pay Method']|| null;
+    row.insertCell(5).appendChild(createDiv((PayMethod === null)? null:(PayMethod === "Cash")? 'Tiền mặt':'Chuyển khoản',(PayMethod === null)? null : (PayMethod === "Cash")? 'Cash':'Banking','PayMethod'));
+    // Thêm hiệu ứng cho hàng mới
+    row.classList.add('row-added');
+    setTimeout(() => {
+        row.classList.remove('row-added');
+    }, 1000);
+}
+
+function removeRow(key) {
+    const row = document.querySelector(`[data-key="${key}"]`);
+    if (row) row.remove(); // Xóa hàng nếu tồn tại
+}
 
 function createDiv(content, childClass, parentClass) {
     const div = document.createElement('div');
@@ -105,6 +129,7 @@ function createDiv(content, childClass, parentClass) {
     if (childClass) div.classList.add(childClass); // Add child class if provided
     return div;
   }
+
 function createNestedDiv(content1, content2, parentClass) {
     const parentDiv = document.createElement('div');
     parentDiv.classList.add(parentClass); // Add class to parent div
@@ -129,10 +154,29 @@ function formatTime(timestamp) {
     const date = new Date(timestamp);
     return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
   }
-function paid_status(Paystatus) {
-    if (Paystatus === "Paid") return "Đã thanh toán"
-    
-}
+
+  document.addEventListener('click', (event) => {
+    // Kiểm tra nếu click vào phần tử trong cột Pay Method
+    const clickedElement = event.target;
+
+    // Xác định lớp PayMethod và nội dung "Chuyển khoản"
+    if (clickedElement.classList.contains('PayMethod') && clickedElement.textContent.trim() === 'Chuyển khoản') {
+        // Lấy thông tin thanh toán từ hàng tương ứng
+        const row = clickedElement.closest('tr');
+        const key = row.getAttribute('data-key'); // Lấy key từ hàng
+        const dbRef = ref(db, `All Ride Requests/${key}/Pay Information`);
+
+        // Truy vấn thông tin từ Firebase
+        onValue(dbRef, (snapshot) => {
+            const payInfo = snapshot.val();
+            if (payInfo) {
+                BankInfomation(payInfo); // Gọi hàm hiển thị thông tin ngân hàng
+            } else {
+                alert("Không có thông tin ngân hàng.");
+            }
+        });
+    }
+});
 
 function BankInfomation(payInfo) {
     // Tạo container cho cửa sổ thông tin
@@ -240,12 +284,9 @@ function searchTable() {
         cell.style.color = 'orange'; // Đổi màu chữ nếu cần
     }
 }
-
 // Gắn sự kiện input vào thanh tìm kiếm
 if (searchBar) {
     searchBar.addEventListener('input', searchTable);
 }
 
-
-
-window.onload = paymentDisplay
+listenToUpdates();
