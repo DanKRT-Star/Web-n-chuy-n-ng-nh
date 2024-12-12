@@ -235,20 +235,29 @@ tbody tr {
     height: 35px;
 }
 
-button {
-    border: none;
-    font-size: 14px;
-    background: rgba(175, 238, 238, 0.7);
-    width: 50%;
-    height: 20px;
-    border-radius: 25px;
+
+
+.Banking:hover {
+    transform: scale(1.2);
 }
 
 h2 {
     color: #ff9900;
 }
 
-.cash-method {
+.Banking {
+    display: flex; /* Kích hoạt flexbox */
+    justify-content: center; /* Căn giữa ngang */
+    align-items: center; /* Căn giữa dọc */
+    text-align: center;
+    width: 50%;
+    height: 20px;
+    border-radius: 25px;
+    background: rgba(175, 238, 238, 0.7);
+    margin-left: 25%;
+}
+
+.Cash {
     display: flex; /* Kích hoạt flexbox */
     justify-content: center; /* Căn giữa ngang */
     align-items: center; /* Căn giữa dọc */
@@ -258,4 +267,54 @@ h2 {
     border-radius: 25px;
     background-color: rgba(127, 255, 127, 0.7); 
     margin-left: 25%;
+}
+
+.NotPaid {
+    align-items: center; /* Căn giữa dọc */
+    text-align: center;
+    display: flex; /* Kích hoạt flexbox */
+    justify-content: center; /* Căn giữa ngang */
+    width: 70%;
+    height: fit-content;
+    padding: 2px;
+    border-radius: 25px;
+    background-color: rgba(255, 127, 127, 0.7);
+    margin-left: 25%;
+}
+
+.Paid {
+    display: flex; /* Kích hoạt flexbox */
+    justify-content: center; /* Căn giữa ngang */
+    align-items: center; /* Căn giữa dọc */
+    text-align: center;
+    width: 70%;
+    height: fit-content;
+    padding: 2px;
+    background-color: rgba(255, 255, 153, 0.7);
+    border-radius: 25px;
+    margin-left: 25%;
+}
+
+.row-added {
+    animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.PayStatus, .PayMethod {
+    transition: background-color 0.5s ease, transform 0.3s ease; /* Hiệu ứng chuyển màu và phóng to */
+}
+
+.PayMethod.status-transition, .PayStatus.status-transition {
+    transform: scale(1.1);
 }
