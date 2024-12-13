@@ -384,7 +384,7 @@ function filterTable(type, option) {
         visibleRows.sort((rowA, rowB) => {
             const timeA = new Date(rowA.cells[5].textContent.replace(/(\d+)\/(\d+)\/(\d+) (\d+):(\d+)/, '$3-$2-$1T$4:$5'));
             const timeB = new Date(rowB.cells[5].textContent.replace(/(\d+)\/(\d+)\/(\d+) (\d+):(\d+)/, '$3-$2-$1T$4:$5'));
-            return currentFilters.time === 'Newest First' ? timeB - timeA : timeA - timeB;
+            return currentFilters.time === 'Mới nhất' ? timeB - timeA : timeA - timeB;
         });
     }
 
