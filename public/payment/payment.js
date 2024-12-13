@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, onChildChanged, onChildAdded, onChildRemoved } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import { getDatabase, ref, onChildChanged, onChildAdded, onChildRemoved, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
 // Cấu hình Firebase
 const firebaseConfig = {
@@ -287,6 +287,125 @@ function searchTable() {
 // Gắn sự kiện input vào thanh tìm kiếm
 if (searchBar) {
     searchBar.addEventListener('input', searchTable);
+}
+
+
+document.getElementById('payStatusHeader').addEventListener('click', () => {
+    showFilterOptions('payStatus');
+});
+
+document.getElementById('timeHeader').addEventListener('click', () => {
+    showFilterOptions('time');
+});
+
+document.getElementById('payMethodHeader').addEventListener('click', () => {
+    showFilterOptions('payMethod');
+});
+
+document.addEventListener('click', (e) => {
+    const filterOptions = document.querySelector('.filter-options');
+    if (filterOptions && !filterOptions.contains(e.target) && !e.target.closest('th')) {
+        filterOptions.remove(); // Đóng danh sách lọc
+    }
+});
+
+let currentFilters = {
+    payStatus: 'All',
+    time: null,
+    payMethod: 'All'
+};
+
+function applyFilter(type, option) {
+    if (type === 'payStatus') {
+        currentFilters.payStatus = option;
+    } else if (type === 'time') {
+        currentFilters.time = option;
+    } else if (type === 'payMethod') {
+        currentFilters.payMethod = option;
+    }
+
+    filterTable(currentFilters); // Lọc bảng với các tuỳ chọn đã chọn
+}
+
+function showFilterOptions(type) {
+    let options = [];
+    if (type === 'payStatus') {
+        options = ['All', 'Chưa thanh toán', 'Đã thanh toán'];
+    } else if (type === 'time') {
+        options = ['Mới nhất', 'Cũ nhất'];
+    } else if (type === 'payMethod') {
+        options = ['All', 'Tiền mặt', 'Chuyển khoản'];
+    }
+
+    // Tạo và hiển thị danh sách lọc
+    const filterContainer = document.createElement('ul');
+    filterContainer.classList.add('filter-options');
+
+    options.forEach(option => {
+        const li = document.createElement('li');
+        li.textContent = option;
+        li.addEventListener('click', () => {
+            applyFilter(type, option); // Gọi hàm áp dụng lọc
+            filterContainer.remove(); // Ẩn danh sách sau khi chọn
+        });
+        filterContainer.appendChild(li);
+    });
+
+    // Xóa danh sách cũ nếu có
+    const existingFilter = document.querySelector('.filter-options');
+    if (existingFilter) existingFilter.remove();
+
+    // Thêm danh sách mới vào DOM
+    document.body.appendChild(filterContainer);
+
+    // Đặt vị trí cho danh sách lọc
+    const header = document.getElementById(`${type}Header`);
+    const rect = header.getBoundingClientRect();
+    filterContainer.style.left = `${rect.left}px`;
+    filterContainer.style.top = `${rect.bottom + window.scrollY}px`;
+}
+
+function filterTable(filters) {
+    const tableBody = document.querySelector("#paymentTable tbody");
+    const rows = Array.from(tableBody.querySelectorAll('tr'));
+
+    rows.forEach(row => {
+        let isValid = true;
+
+        // Lọc theo tình trạng trả
+        if (filters.payStatus && filters.payStatus !== 'All') {
+            const statusCell = row.cells[4]; // Cột tình trạng trả
+            const statusDiv = statusCell.querySelector('.PayStatus');
+            const statusText = statusDiv.textContent.trim();
+            isValid = isValid && statusText === filters.payStatus;
+        }
+
+        // Lọc theo phương thức thanh toán
+        if (filters.payMethod && filters.payMethod !== 'All') {
+            const methodCell = row.cells[5]; // Cột phương thức thanh toán
+            const methodDiv = methodCell.querySelector('.PayMethod');
+            const methodText = methodDiv.textContent.trim();
+            isValid = isValid && methodText === filters.payMethod;
+        }
+
+        row.style.display = isValid ? '' : 'none'; // Hiển thị hoặc ẩn hàng
+    });
+
+    // Lọc và sắp xếp thời gian nếu cần
+    const visibleRows = Array.from(tableBody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+    if (filters.time) {
+        visibleRows.sort((rowA, rowB) => {
+            const timeA = new Date(rowA.cells[2].textContent.replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1'));
+            const timeB = new Date(rowB.cells[2].textContent.replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1'));
+            return filters.time === 'Mới nhất' ? timeB - timeA : timeA - timeB;
+        });
+    }
+
+    // Cập nhật lại thứ tự hàng
+    visibleRows.forEach((row, index) => {
+        row.cells[0].textContent = index + 1; // Cập nhật lại số thứ tự
+        tableBody.appendChild(row); // Đảm bảo hàng ở đúng vị trí
+    });
 }
 
 listenToUpdates();
