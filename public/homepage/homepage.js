@@ -8,18 +8,3 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-
-// Hiển thị popup thông tin Admin
-document.getElementById("adminIcon").addEventListener("click", function () {
-    document.getElementById("adminPopup").classList.toggle("show");
-});
-
-// Đóng popup thông tin Admin
-document.getElementById("closePopup").addEventListener("click", function () {
-    document.getElementById("adminPopup").classList.remove("show");
-});
-
-// Điều hướng đến trang đăng nhập khi logout
-function redirectToPage() {
-    window.location.href = "./index.html";
-}

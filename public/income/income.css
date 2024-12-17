@@ -102,8 +102,6 @@ main {
     width: 750px;
 }
 
-
-
 .income {
     color: #ff9900;
     align-items: center;
@@ -158,9 +156,6 @@ main {
     animation: Pop-up 0.3s ease-in 0.2s forwards;
 }
 
-
-
-
 .sideChart2 {
     position: fixed;
     top: 410px;
@@ -175,8 +170,6 @@ main {
     animation: Pop-up 0.3s ease-in 0.4s forwards;
 
 }
-
-
 
 .requestChart {
     display: flex;
@@ -214,14 +207,12 @@ main {
     transition: all 0.5s ease;
 }
 
-
-
-
 .Total {
     margin-bottom: 10px;
     font-size: 15px;
     color: #ff9900;
 }
+
 .TotalNumber {
     margin-bottom: 10px;
     font-size: 15px;
