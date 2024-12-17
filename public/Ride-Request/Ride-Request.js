@@ -58,7 +58,7 @@ function updateRow(key, data) {
     // Nếu trạng thái thay đổi
     if (!statusDiv.classList.contains(newStatus)) {
         // Loại bỏ tất cả các class trạng thái cũ
-        statusDiv.classList.remove('ended', 'arrived', 'accepted', 'failed', 'waiting');
+        statusDiv.classList.remove('ended', 'arrived', 'accepted', 'nonAccepted', 'waiting');
         
         // Thêm hiệu ứng phóng to khi trạng thái thay đổi
         statusDiv.classList.add('status-transition');
@@ -117,7 +117,7 @@ function formatTime(timestamp) {
     if (!timestamp) return "N/A";
     const date = new Date(timestamp);
     return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-  }
+}
 
   function calculateWaitTime(startTime) {
     const startTimestamp = new Date(startTime).getTime();
@@ -130,7 +130,6 @@ function formatTime(timestamp) {
 
     return `${hours}:${minutes}:${seconds}`;
 }
-
 
 function createDiv(content, childClass, parentClass) {
     const div = document.createElement('div');
@@ -156,7 +155,7 @@ function createDiv(content, childClass, parentClass) {
         }
     }
     return div;
-  }
+}
 
 function createNestedDiv(content1, content2, parentClass) {
     const parentDiv = document.createElement('div');
@@ -176,10 +175,9 @@ function createNestedDiv(content1, content2, parentClass) {
     parentDiv.appendChild(childDiv2);
   
     return parentDiv;
-  }
+}
 
-
-  function renderRating(ratingContainer, rating) {
+function renderRating(ratingContainer, rating) {
     ratingContainer.innerHTML = ''; // Xóa các ngôi sao hiện tại
 
     // Kiểm tra nếu không có rating
@@ -284,7 +282,6 @@ setInterval(() => {
     });
 }, 1000);
 
-
 let currentFilters = {
     status: null,
     time: null,
@@ -316,7 +313,7 @@ function toggleFilterOptions(type) {
 function showFilterOptions(type) {
     let options = [];
     if (type === 'status') {
-        options = ['All', 'ended', 'arrived', 'accepted', 'failed', 'waiting'];
+        options = ['All', 'ended', 'arrived', 'accepted', 'nonAccepted', 'waiting'];
     } else if (type === 'time') {
         options = ['Mới nhất', 'Cũ nhất'];
     }
@@ -394,9 +391,6 @@ function filterTable(type, option) {
         tableBody.appendChild(row); // Đảm bảo hàng đã được cập nhật số thứ tự được thêm lại đúng vị trí
     });
 }
-
-
-
 
 // Đóng danh sách lọc khi nhấp ra ngoài
 document.addEventListener('click', (e) => {

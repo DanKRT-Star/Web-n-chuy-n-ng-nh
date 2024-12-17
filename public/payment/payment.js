@@ -79,14 +79,14 @@ function updateRow(key, data) {
      // Nếu trạng thái thay đổi
      if (!PayMethodDiv.classList.contains(newPayMethod)) {
         // Loại bỏ tất cả các class trạng thái cũ
-        PayMethodDiv.classList.remove('Cash', 'Banking');
+        PayMethodDiv.classList.remove('Cash', 'Banking', 'ZALOPAY');
         
         // Thêm hiệu ứng phóng to khi trạng thái thay đổi
         PayMethodDiv.classList.add('status-transition');
 
         // Đặt trạng thái mới
         PayMethodDiv.classList.add(newPayMethod);
-        PayMethodDiv.textContent = (newPayMethod === null)? null : (newPayMethod === "Cash")? "Tiền mặt":"Chuyển khoản"; // Cập nhật nội dung nếu cần
+        PayMethodDiv.textContent = (newPayMethod === null)? null : (newPayMethod === "Cash")? "Tiền mặt" :  (newPayMethod === "ZALOPAY")? "ZALOPAY" : "Chuyển khoản"; // Cập nhật nội dung nếu cần
 
         // Gỡ hiệu ứng sau 300ms (tương ứng với thời gian trong CSS)
         setTimeout(() => {
@@ -109,7 +109,7 @@ function addRow(key, data) {
     const PaidStatus = data['Pay Status'];
     row.insertCell(4).appendChild(createDiv((PaidStatus === "Paid")? 'Đã thanh toán':'Chưa thanh toán', (PaidStatus === "Paid")? 'Paid':'NotPaid', 'PayStatus'));
     const PayMethod = payInfo['Pay Method']|| null;
-    row.insertCell(5).appendChild(createDiv((PayMethod === null)? null:(PayMethod === "Cash")? 'Tiền mặt':'Chuyển khoản',(PayMethod === null)? null : (PayMethod === "Cash")? 'Cash':'Banking','PayMethod'));
+    row.insertCell(5).appendChild(createDiv((PayMethod === null)? null:(PayMethod === "Cash")? 'Tiền mặt' : (PayMethod === "ZALOPAY")? 'ZaloPay' : 'Chuyển khoản',(PayMethod === null)? null : (PayMethod === "Cash")? 'Cash': (PayMethod === "ZALOPAY")? 'ZALOPAY' : 'Banking','PayMethod'));
     // Thêm hiệu ứng cho hàng mới
     row.classList.add('row-added');
     setTimeout(() => {
@@ -327,14 +327,14 @@ function applyFilter(type, option) {
     filterTable(currentFilters); // Lọc bảng với các tuỳ chọn đã chọn
 }
 
-function showFilterOptions(type) {
+function showFilterOptions(type) { 
     let options = [];
     if (type === 'payStatus') {
         options = ['All', 'Chưa thanh toán', 'Đã thanh toán'];
     } else if (type === 'time') {
         options = ['Mới nhất', 'Cũ nhất'];
     } else if (type === 'payMethod') {
-        options = ['All', 'Tiền mặt', 'Chuyển khoản'];
+        options = ['All', 'Tiền mặt', 'Chuyển khoản', 'ZaloPay'];
     }
 
     // Tạo và hiển thị danh sách lọc

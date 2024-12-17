@@ -23,10 +23,9 @@ body {
 /* Sidebar nền để đẩy nội dung */
 .sidebar-container {
     position: relative;
-    
     width: 80px; /* Chiều rộng mặc định */
     transition: width 0.5s;
-    z-index: 1;
+    z-index: 10000;
     margin: 0;
     padding: 0;
 }
