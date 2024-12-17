@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+
 .layout {
     display: flex;
     min-height: 100vh;
@@ -277,6 +280,21 @@ h2 {
     border-radius: 25px;
     background-color: rgba(127, 255, 127, 0.7); 
     margin-left: 25%;
+}
+
+.ZALOPAY {
+    display: flex; /* Kích hoạt flexbox */
+    justify-content: center; /* Căn giữa ngang */
+    align-items: center; /* Căn giữa dọc */
+    text-align: center;
+    width: 50%;
+    height: 20px;
+    border-radius: 25px;
+    margin-left: 25%;
+    color: #0088FF;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', sans-serif;
 }
 
 .NotPaid {
