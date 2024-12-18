@@ -86,7 +86,7 @@ function updateRow(key, data) {
 
         // Đặt trạng thái mới
         PayMethodDiv.classList.add(newPayMethod);
-        PayMethodDiv.textContent = (newPayMethod === null)? null : (newPayMethod === "Cash")? "Tiền mặt" :  (newPayMethod === "ZALOPAY")? "ZALOPAY" : "Chuyển khoản"; // Cập nhật nội dung nếu cần
+        PayMethodDiv.textContent = (newPayMethod === null)? null : (newPayMethod === "Cash")? "Tiền mặt" : "ZALOPAY" ; // Cập nhật nội dung nếu cần
 
         // Gỡ hiệu ứng sau 300ms (tương ứng với thời gian trong CSS)
         setTimeout(() => {
@@ -109,7 +109,7 @@ function addRow(key, data) {
     const PaidStatus = data['Pay Status'];
     row.insertCell(4).appendChild(createDiv((PaidStatus === "Paid")? 'Đã thanh toán':'Chưa thanh toán', (PaidStatus === "Paid")? 'Paid':'NotPaid', 'PayStatus'));
     const PayMethod = payInfo['Pay Method']|| null;
-    row.insertCell(5).appendChild(createDiv((PayMethod === null)? null:(PayMethod === "Cash")? 'Tiền mặt' : (PayMethod === "ZALOPAY")? 'ZaloPay' : 'Chuyển khoản',(PayMethod === null)? null : (PayMethod === "Cash")? 'Cash': (PayMethod === "ZALOPAY")? 'ZALOPAY' : 'Banking','PayMethod'));
+    row.insertCell(5).appendChild(createDiv((PayMethod === null)? null:(PayMethod === "Cash")? 'Tiền mặt' : 'ZaloPay',(PayMethod === null)? null : (PayMethod === "Cash")? 'Cash': 'ZALOPAY','PayMethod'));
     // Thêm hiệu ứng cho hàng mới
     row.classList.add('row-added');
     setTimeout(() => {
@@ -177,72 +177,6 @@ function formatTime(timestamp) {
         });
     }
 });
-
-function BankInfomation(payInfo) {
-    // Tạo container cho cửa sổ thông tin
-    const modalOverlay = document.createElement('div');
-    modalOverlay.classList.add('modal-overlay'); // Lớp phủ tối bên ngoài modal
-
-    const modalContent = document.createElement('div');
-    modalContent.classList.add('modal-content'); // Nội dung modal
-
-    // Nút đóng
-    const closeButton = document.createElement('button');
-    closeButton.textContent = "Đóng";
-    closeButton.classList.add('close-button');
-    closeButton.onclick = () => document.body.removeChild(modalOverlay);
-
-    // Nội dung thông tin thanh toán
-    const title = document.createElement('h2');
-    title.textContent = "Thông Tin Ngân Hàng";
-
-    const payAmount = document.createElement('p');
-    payAmount.textContent = `Số tiền đã chuyển: ${payInfo['amount'] || "N/A"}`;
-
-    const bank = document.createElement('p');
-    bank.textContent = `Ngân hàng: ${payInfo['bankType'] || "N/A"}`;
-
-    const creditCard = document.createElement('p');
-    creditCard.textContent = `Loại thẻ: ${payInfo['cardType'] || "N/A"}`;
-
-    const payDay = document.createElement('p');
-    payDay.textContent = `Thời gian thanh toán: ${formatPayDate(payInfo['payDate'])}`;
-
-    const bankCode = document.createElement('p');
-    bankCode.textContent = `Mã ngân hàng: ${payInfo['codeBank'] || "N/A"}`;
-
-    const status = document.createElement('p');
-    status.textContent = `Kết quả: ${payInfo['status'] || "N/A"}`;
-
-    // Thêm các phần tử vào modal
-    modalContent.appendChild(title);
-    modalContent.appendChild(payAmount);
-    modalContent.appendChild(bank);
-    modalContent.appendChild(creditCard);
-    modalContent.appendChild(payDay);
-    modalContent.appendChild(bankCode);
-    modalContent.appendChild(status);
-    modalContent.appendChild(closeButton);
-    modalOverlay.appendChild(modalContent);
-
-    // Thêm modal vào trang
-    document.body.appendChild(modalOverlay);
-}
-
-function formatPayDate(payDate) {
-    if (!payDate) return "N/A";
-
-    // Tách các thành phần từ chuỗi
-    const year = payDate.slice(0, 4);
-    const month = payDate.slice(4, 6);
-    const day = payDate.slice(6, 8);
-    const hours = payDate.slice(8, 10);
-    const minutes = payDate.slice(10, 12);
-    const seconds = payDate.slice(12, 14);
-
-    // Tạo chuỗi định dạng ngày tháng
-    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-}
 
 // Lấy thanh tìm kiếm 
 const searchBar = document.querySelector('.search-bar');
@@ -334,7 +268,7 @@ function showFilterOptions(type) {
     } else if (type === 'time') {
         options = ['Mới nhất', 'Cũ nhất'];
     } else if (type === 'payMethod') {
-        options = ['All', 'Tiền mặt', 'Chuyển khoản', 'ZaloPay'];
+        options = ['All', 'Tiền mặt', 'ZaloPay'];
     }
 
     // Tạo và hiển thị danh sách lọc
